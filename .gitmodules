@@ -1,0 +1,3 @@
+[submodule "themes/beautiful_hugo"]
+	path = themes/beautiful_hugo
+	url = git@github.com:shrenikm/beautifulhugo.git
