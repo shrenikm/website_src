@@ -1,3 +1,59 @@
-baseURL = 'http://example.org/'
+baseURL = 'http://shrenikm.github.io/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = ''
+
+# Theme to use.
+theme = "beautiful_hugo"
+
+# Use chrome for syntax highlighting.
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+
+# Disqus support.
+# disqusShortname = ""
+
+# Google analytics.
+# googleAnalytics = ""
+
+[Params]
+  mainSections = ["posts"]
+  dateFormat = "January 1, 2006"
+  rss = true
+  comments = true
+  socialShare = true
+  showRelatedPosts = true
+
+  # Client side syntax highlighting.
+  useHLJS = true
+
+  # Github commit SHA footer.
+  # commit = "https://github.com/shrenikm/blah"
+
+
+[Author]
+  name = "Shrenik M"
+  email = "shrenik95@gmail.com"
+  github = "shrenikm"
+  linkedin = "shrenik95"
+
+
+[[menu.main]]
+  name = "Posts"
+  url = ""
+  weight = 1
+
+[[menu.main]]
+  name = "Projects"
+  url = "pages/projects/"
+  weight = 2
+
+[[menu.main]]
+  name = "About"
+  url = "pages/about/"
+  weight = 3
+
+
+[[menu.main]]
+  name = "Tags"
+  url = "tags"
+  weight = 4
