@@ -1,2 +1,2 @@
-# website_src
+# Website
 Hugo source
