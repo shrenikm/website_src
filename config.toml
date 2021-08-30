@@ -1,6 +1,6 @@
 baseURL = "https://shrenikm.com"
 languageCode = "en-us"
-title = "Home"
+title = ""
 
 # Theme to use.
 theme = "beautiful_hugo"
@@ -10,7 +10,7 @@ pygmentsUseClasses = true
 pygmentsCodeFences = true
 
 # Google analytics.
-# googleAnalytics = ""
+googleAnalytics = "G-4KBNN5G9DE"
 
 # Disqus support.
 disqusShortname = "https-shrenikm-com"
@@ -26,6 +26,9 @@ disqusShortname = "https-shrenikm-com"
   comments = true
   socialShare = true
   showRelatedPosts = true
+
+  # Hide the author icon and name in each post card on the list view.
+  hideAuthor = true
 
   # Client side syntax highlighting.
   useHLJS = true
@@ -45,8 +48,7 @@ disqusShortname = "https-shrenikm-com"
 
 
 [Author]
-  # Name here adds the name to each post card.
-  # name = "Shrenik M"
+  name = "Shrenik M"
   email = "shrenik95@gmail.com"
   github = "shrenikm"
   linkedin = "shrenik95"
