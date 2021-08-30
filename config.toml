@@ -31,7 +31,7 @@ disqusShortname = "https-shrenikm-com"
   useHLJS = true
 
   # Setting to true will hide disqus comments behind a button.
-  delayDisqus = true
+  delayDisqus = false
 
   # Github commit SHA footer.
   # commit = "https://github.com/shrenikm/blah"
