@@ -29,7 +29,7 @@ For this to be satisfied, we must have all $c_i = 0$. To prove this, we first as
 \frac{c_1}{c_{m+1}}\alpha_1 + \ldots + \frac{c_m}{c_{m+1}}\alpha_m + \gamma = 0
 \end{equation}
 
-The above equation means that either $\gamma$ can be expressed as a linear combination of the basis vectors of $U$ (If some of the $c_i \neq 0$), or $\gamma = 0$. Both of these would mean that $\gamma \in V$. Hence this means that $c_{m+1}$ cannot be non-zero.
+The above equation means that either $\gamma$ can be expressed as a linear combination of the basis vectors of $U$ (If some of the $c_i \neq 0$), or $\gamma = 0$. Both of these would mean that $\gamma \in U$, which is not the case as we have specifically chosen $\gamma \not\in U$. Hence this means that $c_{m+1}$ cannot be non-zero.
 
 \begin{equation}
 c_{m+1} = 0 \implies c_1\alpha_1 + \ldots + c_m\alpha_m = 0
