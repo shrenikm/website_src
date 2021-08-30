@@ -1,7 +1,7 @@
 ---
 title: "Dimension of a proper subspace"
 date: 2021-08-29T10:20:38-07:00
-draft: true
+draft: false
 tags: ["math", "linear_algebra"]
 ---
 
