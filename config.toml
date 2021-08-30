@@ -1,6 +1,6 @@
-baseURL = 'https://shrenikm.com'
-languageCode = 'en-us'
-title = ''
+baseURL = "https://shrenikm.com"
+languageCode = "en-us"
+title = "Home"
 
 # Theme to use.
 theme = "beautiful_hugo"
@@ -21,7 +21,7 @@ disqusShortname = "https-shrenikm-com"
 
 [Params]
   mainSections = ["posts"]
-  dateFormat = "January 1, 2006"
+  dateFormat = "January 2, 2006"
   rss = true
   comments = true
   socialShare = true
