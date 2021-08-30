@@ -15,6 +15,10 @@ pygmentsCodeFences = true
 # Google analytics.
 # googleAnalytics = ""
 
+[markup.goldmark.renderer]
+  unsafe= true
+
+
 [Params]
   mainSections = ["posts"]
   dateFormat = "January 1, 2006"
@@ -28,6 +32,13 @@ pygmentsCodeFences = true
 
   # Github commit SHA footer.
   # commit = "https://github.com/shrenikm/blah"
+
+  # Enable inline shortcodes.
+  enableInlineShortcodes = true
+
+  # Use MathJax (From: https://github.com/StevenDoesStuffs/beautifulhugo)
+  disableMath = false
+  useMathJax = true
 
 
 [Author]
