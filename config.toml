@@ -9,11 +9,11 @@ theme = "beautiful_hugo"
 pygmentsUseClasses = true
 pygmentsCodeFences = true
 
-# Disqus support.
-# disqusShortname = ""
-
 # Google analytics.
 # googleAnalytics = ""
+
+# Disqus support.
+disqusShortname = "https-shrenikm-com"
 
 [markup.goldmark.renderer]
   unsafe= true
@@ -30,6 +30,9 @@ pygmentsCodeFences = true
   # Client side syntax highlighting.
   useHLJS = true
 
+  # Setting to true will hide disqus comments behind a button.
+  delayDisqus = true
+
   # Github commit SHA footer.
   # commit = "https://github.com/shrenikm/blah"
 
@@ -42,7 +45,8 @@ pygmentsCodeFences = true
 
 
 [Author]
-  name = "Shrenik M"
+  # Name here adds the name to each post card.
+  # name = "Shrenik M"
   email = "shrenik95@gmail.com"
   github = "shrenikm"
   linkedin = "shrenik95"
