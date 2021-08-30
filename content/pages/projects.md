@@ -2,6 +2,7 @@
 title: "Projects"
 date: 2021-08-28T16:53:20-07:00
 draft: false
+layout: "about"
 ---
 
 ## GPV

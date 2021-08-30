@@ -2,6 +2,7 @@
 title: "Shrenik Muralidhar"
 date: 2021-08-28T16:52:40-07:00
 draft: false
+layout: "about"
 ---
 
 I'm a roboticist, currently working as a motion planning research engineer at [Brain Corporation](https://www.braincorp.com).
