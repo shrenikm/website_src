@@ -1,7 +1,7 @@
 ---
 title: "Change of Basis"
 date: 2021-09-06T22:32:43-07:00
-draft: true
+draft: false
 tags: ["math", "linear_algebra"]
 ---
 
