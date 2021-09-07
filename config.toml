@@ -10,7 +10,7 @@ pygmentsUseClasses = true
 pygmentsCodeFences = true
 
 # Google analytics.
-googleAnalytics = "G-4KBNN5G9DE"
+googleAnalytics = "UA-206203136-1"
 
 # Disqus support.
 disqusShortname = "https-shrenikm-com"
