@@ -1,5 +1,5 @@
 ---
-title: "Injective Linear Transformations"
+title: "Injective linear transformations"
 date: 2021-09-20T01:02:55-07:00
 draft: false
 tags: ["math", "linear_algebra"]

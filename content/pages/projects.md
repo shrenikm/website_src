@@ -38,7 +38,7 @@ The VAE is trained using state-action pairs collected from the trained agent. Th
 
  | 
 ------------------ | ---------------------
-{{< figure src="/gifs/gpv1.gif" width="820" alt="DDPG policy">}} | {{< figure src="/gifs/gpv1.gif" width="420" alt="PT-GPV policy" >}}
+{{< figure src="/pages/gifs/gpv1.gif" width="820" alt="DDPG policy">}} | {{< figure src="/pages/gifs/gpv1.gif" width="420" alt="PT-GPV policy" >}}
 
 <br><br/>
 
@@ -64,7 +64,7 @@ Each training iteration trains DDPG and the VAE for a set number of iterations. 
 </p>
 -->
 
-{{< figure src="/images/gpv.png" width="520" alt="ST-GPV block diagram" >}}
+{{< figure src="/pages/images/gpv.png" width="520" alt="ST-GPV block diagram" >}}
 
 <br><br/>
 
@@ -95,7 +95,7 @@ An example of the output of the value iteration algorithm on a simple gridworld 
 
 <br><br/>
 
-{{< figure src="/images/mnyrve.png" width="500" alt="Grid World" >}}
+{{< figure src="/pages/images/mnyrve.png" width="500" alt="Grid World" >}}
 
 <br><br/>
 
@@ -150,8 +150,8 @@ Data for the results were obtained using direct collocation on simulations of th
 
 <br><br/>
 
-{{< figure src="/images/pte1.jpg" width="720" alt="Cartpole" >}}
-{{< figure src="/images/pte2.jpg" width="960" alt="Quadrotor" >}}
+{{< figure src="/pages/images/pte1.jpg" width="720" alt="Cartpole" >}}
+{{< figure src="/pages/images/pte2.jpg" width="960" alt="Quadrotor" >}}
 
 <br><br/>
 
@@ -203,7 +203,7 @@ A representation of the graph is as shown. The dotted nodes denote the new initi
 
 <br><br/>
 
-{{< figure src="/images/pte3.png" width="480" alt="NTCG" >}}
+{{< figure src="/pages/images/pte3.png" width="480" alt="NTCG" >}}
 
 <br><br/>
 
@@ -261,7 +261,7 @@ The dynamic growth of a single tree using the dual direction model is as shown. 
 
 <br><br/>
 
-{{< figure src="/images/ncldt1.png" width="600" alt="Single Tree" >}}
+{{< figure src="/pages/images/ncldt1.png" width="600" alt="Single Tree" >}}
 
 <br><br/>
 
@@ -275,7 +275,7 @@ If a favorable root is sampled, a single tree is able to find its way through an
 
 <br><br/>
 
-{{< figure src="/images/ncldt2.png" width="600" alt="Narrow Passage" >}}
+{{< figure src="/pages/images/ncldt2.png" width="600" alt="Narrow Passage" >}}
 
 <br><br/>
 
@@ -303,7 +303,7 @@ The result of the multi tree algorithm in a two dimensional setting is as shown.
 
 <br><br/>
 
-{{< figure src="/images/ncldt3.png" width="600" alt="Multi Tree" >}}
+{{< figure src="/pages/images/ncldt3.png" width="600" alt="Multi Tree" >}}
 
 <br><br/>
 
