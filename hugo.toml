@@ -8,12 +8,14 @@ theme = "beautiful_hugo"
 # Use chrome for syntax highlighting.
 pygmentsUseClasses = true
 pygmentsCodeFences = true
-
-# Google analytics.
-googleAnalytics = "UA-206203136-1"
+pygmentsCodefencesGuessSyntax = true
 
 # Disqus support.
 disqusShortname = "https-shrenikm-com"
+
+[services]
+  [services.googleAnalytics]
+    ID = 'G-E2P4DFRG5B'
 
 [markup.goldmark.renderer]
   unsafe= true
