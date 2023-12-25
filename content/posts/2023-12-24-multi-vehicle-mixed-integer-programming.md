@@ -1,7 +1,7 @@
 ---
 title: "Multi Vehicle Mixed Integer Programming"
 date: 2023-12-24T18:54:32-08:00
-draft: true
+draft: false
 tags: ["robotics", "motion_planning", "numerical_optimization", "trajectory_optimization"]
 ---
 <!--
