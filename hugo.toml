@@ -21,7 +21,7 @@ disqusShortname = "https-shrenikm-com"
   unsafe= true
 
 
-[Params]
+[params]
   mainSections = ["posts"]
   dateFormat = "January 2, 2006"
   rss = true
@@ -47,9 +47,9 @@ disqusShortname = "https-shrenikm-com"
   # Use MathJax (From: https://github.com/StevenDoesStuffs/beautifulhugo)
   disableMath = false
   useMathJax = true
+  
 
-
-[Author]
+[author]
   name = "Shrenik M"
   email = "shrenik95@gmail.com"
   github = "shrenikm"
