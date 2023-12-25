@@ -91,7 +91,7 @@ Here $q \in \MR^n$ and $r \in \MR^m$ are cost vectors that form the linear equiv
 
 ### Objective
 
-As is common in these scenarios, to make the problem tractable, it is discretized into $N$ time steps. Separate costs vectors are also introduced for the the final state $s_N$. This is a familiar trope in planning and allows for greater flexibility in generating the results we need, which we will see later.
+As is common in these scenarios, to make the problem tractable, it is discretized into $N$ time steps. Separate costs vectors are also introduced for the final state $s_N$. This is a familiar trope in planning and allows for greater flexibility in generating the results we need, which we will see later.
 
 \begin{equation}
 \begin{aligned}
@@ -128,7 +128,7 @@ Where $|x_i|$ here is just the absolute value of the $\ith$ element of $x$.
 We can now introduce slack variables $s_i$ for each $|x_i|$ such that $|x_i| \le s_i$ and frame the objective as a linear function in $s$. The objective will now be a minimization over $s$ and the constraint makes it so that minimizing $s$ will minimize each $|x_i|$
 \begin{equation}
 \begin{aligned}
-\min_{x}\sum_{i=1}^{n}q_i s_i = \min_{s}q^Ts\\\\
+\min_{x}\sum_{i=1}^{n}q_i x_i = \min_{s}q^Ts\\\\
 \text{s.t.} \ \ |x_i| \le s_i
 \end{aligned}
 \end{equation}
@@ -141,7 +141,7 @@ This is nice because it lets us keep a linear objective and represent the absolu
 \end{aligned}
 \end{equation}
 
-With this knowledge, we can now introduce slack variables $w$ and $v$ for $s$ and $u$ respectively. Representing the objective as an LP in these slack terms, along with summing it for every vehicle (assuming $K$ vehicles), we have the final objective function:
+With this knowledge, we can now introduce slack variables $w$ and $v$ for $s$ and $u$ respectively. Representing the objective as an LP in these slack terms, along with taking the sum for every vehicle (assuming $K$ vehicles), we have the final objective function:
 
 \begin{equation}
 \begin{aligned}
@@ -189,7 +189,7 @@ g_n(x) \le c_n + Mb_n\\\\
 \sum_{i=1}^nb_i \le n-1
 \end{aligned}
 \end{equation}
-Let's disect what's happening here. Each $b_i$ can be either 0 or 1.  
+Let's dissect what's happening here. Each $b_i$ can be either 0 or 1.  
 if a particular $b_i = 1$ (for the $\ith$ constraint), we have:
 \begin{equation}
 g_1(x) \le c_1 + M\\\\
@@ -201,16 +201,16 @@ g_1(x) \le c_1\\\\
 \end{equation}
 Which is just the original constraint.  
 
->So if $b_i = 1, \forall i \in \set{1, \ldots n}$, then this means that each constraint would trivially be satisfied, so this would be equivalent to not have any constraints at all.  
+>So if $b_i = 1, \forall i \in \set{1, \ldots n}$, then this means that each constraint would trivially be satisfied, so this would be equivalent to not having any constraints at all.  
 On the other hand if $b_i = 0, \forall i \in \set{1, \ldots n}$, then then problem will be treated as an optimization problem where each of the original constraints need to be satisfied.
 
->What happens if at least one of the $b_i$ values are restricted to be $0$? This would mean that at least one of the constraints (the ones where $b_i = 0$) will need to be satisfied (active), but the rest wouldn't need to be active as they would be trivially satsified due to $M$.
+>What happens if at least one of the $b_i$ values are restricted to be $0$? This would mean that at least one of the constraints (the ones where $b_i = 0$) will need to be satisfied (active), but the rest wouldn't need to be active as they would be trivially satisfied due to $M$.
 
 >Hence by having an additional constraint on the sum of $b_i$ values, restricting them to a maximum value of $n-1$, we can guarantee that at least one $b_i = 0$. This then translates to our desired property of the optimization problem requiring only one of the constraints to be satisfied!
 
-Equipped with this, we can now look at how the paper frames collision avoidance constraints. It is assumed that each obstacle is rectangular and the vehicle moves in a 2D space (It can easily be extended to 3D). Each vehicle/robot is also assumed to be a point.
+Equipped with this, we can now look at how the paper frames collision avoidance constraints. It is assumed that each obstacle is rectangular and the vehicle moves in a two dimensional space (It can easily be extended to 3D). Each vehicle/robot is also assumed to be a point.
 
-If $s_i$ is the current state of the vehicle, we assume that the state contains some $x_i$ and $y_i$, which correspond to the $x$ and $y$ coordindates of the vehicle in 2D space. If the mid point of the obstacle is $(x_c, y_c)$ and its size is $(d_x, d_y)$, we can compute the bottom left and top right points as:
+If $s_i$ is the current state of the vehicle, we assume that the state contains some $x_i$ and $y_i$, which correspond to the $x$ and $y$ coordinates of the vehicle in 2D space. If the mid point of the obstacle is $(x_c, y_c)$ and its size is $(d_x, d_y)$, we can compute the bottom left and top right points as:
 \begin{equation}
 \begin{aligned}
 \xmin = x_c - 0.5d_x\\\\
@@ -290,7 +290,7 @@ Note that we have a different set of binary variables here.
 
 ### Extensions
 
-The entire problem has now reduced to a mixed integer linear program. The objective is a linear function and the constraints are linear in the state, control and binary variables for collision. Additionally, we can also enforce state and constraint limits for each vehicle as upper and lower bounds for each of these variables.
+The entire problem has now reduced to a mixed integer linear program. The objective is a linear function and the constraints are linear in the state, control and binary variables for collision. Additionally, we can also enforce state and control limits for each vehicle as upper and lower bounds for each of these variables.
 
 \begin{equation}
 \begin{aligned}
@@ -301,7 +301,7 @@ u_{pi} \le u_{p,max}\\\\
 \end{aligned}
 \end{equation}
 
-Please refer to the paper $[1]$, to see the entire LP listed out in all its glory. Approximate circular constraints for the state and control can also be formulated (instead of rectangular constraints) as seen in $[2]$.
+Please refer to the paper $[1]$, to see the entire LP written out in all its glory. The state and control constraints can also be formulated as approximate second order ball constraints using a collection of linear constraints (instead of box constraints) as seen in $[2]$.
 
 The papers model the obstacles as being rectangular, but we can always extend it to being general convex polygons. In this case, we would want the vehicle to lie outside the intersection of the half-spaces formed by the edges of the polygon.
 
@@ -318,7 +318,7 @@ Where $O_l$ represents the space inside the $\lth$ convex $P$ sided polygon.
 
 ## Implementation
 
-The MVMIP can be solved by setting up the object and constraints and passing it into a linear solver that supports mixed integer programming. My [implementation](https://github.com/shrenikm/RePlan/tree/main/algorithms/multi_vehicle_mip) uses Google's OR-Tools
+The MVMIP can be solved by setting up the objective and constraints and passing it to a linear solver that supports mixed integer programming. My [implementation](https://github.com/shrenikm/RePlan/tree/main/algorithms/multi_vehicle_mip) uses Google's OR-Tools
 
 The problem can be treated as a one-shot fixed arrival time problem where we set a large time step ($N$) and solve for each vehicle trajectory. This method ensures that there is only a fixed initial cost to run the algorithm and we don't make any adjustments later. The advantage of this method being that we are guaranteed to find the optimal solution to the initial problem setup.
 
@@ -334,34 +334,34 @@ Running the MVMIP for a single vehicle and obstacle results in this:
 
 {{< figure src="/posts/5/gifs/mvmip_setup1.gif" alt="mvmip_setup1" >}}
 
-Turns out that we've run into a classic problem in planning. Because we only have collision constraints at each state and not _in between_ successive states, if our control inputs have large limits, the MVMIP can find a solution that jumps through obstacles. It thinks that the trajectory is feasible because each state alone is collision free, but the reality is that the robot can pass through obstacles between states.
+Turns out that we've run into a classic problem in planning caused due to discretizing the problem. Because we only have collision constraints at each state and not _in between_ successive states, if our control inputs have large limits, the MVMIP can find a solution that jumps through obstacles. It thinks that the trajectory is feasible because each state alone is collision free, but the reality is that the robot can pass through obstacles between discrete states.
 
-How do we solve this? The simple LP formulation of the MVMIP makes it rather difficult to express anything too complex. We could model the space between successive states as another convex polygon and set up approximate constraints. An easier and less expensive way would be to just reduce the bounds of the control inputs such that each control step is guaranteed to move the robot by a max distance of less than the smallest obstacle.
+How do we solve this? The simple LP formulation of the MVMIP makes it rather difficult to express anything too complex. We could model the space between successive states as another convex polygon and set up approximate constraints. An easier and less expensive way would be to just reduce the bounds of the control inputs such that each control step is guaranteed to move the robot by a maximum distance that is less than the size of the smallest obstacle.
 
 \begin{equation}
 \begin{aligned}
 u_{p, max} = \max_{u}\delta_{max} \approx \max_{u}u\\\\
-\text{s.t.} \ \ f(s_p, u_p)\Delta t \le \max{(\xlmax - \xlmin, \ylmax - \ylmin)}
+\text{s.t.} \ \ f(s, u)\Delta t \le \max{(\xlmax - \xlmin, \ylmax - \ylmin)}
 \end{aligned}
 \end{equation}
 
-This obvious has its own downsides of limiting the max control input that can be exerted among others, but keeps it simple in the spirit of the algorithm.
+This obvious has its own downsides of limiting the max control input that can be applied, among others limitations, but keeps it simple in the spirit of the algorithm.
 
 Fixing the control limits now gives us the solution that we need:
 
 {{< figure src="/posts/5/gifs/mvmip_setup2.gif" alt="mvmip_setup2" >}}
 
-We can see that the vehicle maintains clearances to the obstacle as required (boundary around the obstacle). The boundary around the vehicle itself is for vehicle-vehicle clearance.
+We can see that the vehicle maintains clearances to the obstacle as required, as is visually seen in the drawn boundary around the obstacle. The boundary around the vehicle itself is for vehicle-vehicle clearance.
 
 We can verify that it works as expected even with moving obstacles:
 
 {{< figure src="/posts/5/gifs/mvmip_setup3.gif" alt="mvmip_setup3" >}}
 
-Now we can start messing around with some of the costs. To break it down, we have the $q$ vector costs on the state, $r$ vector costs on the control and $p$ vector costs on the final state.The $q$ costs encourage the robot to make progress towards the final state $s_f$. The $r$ costs encourage the robot to minimize the total control effort exerted and the $p$ costs encourage the robot to reach the goal by any means necessary.
+Now we can start messing around with some of the costs. To break it down, we have the $q$ vector costs on the state, $r$ vector costs on the control and $p$ vector costs on the final state. The $q$ costs encourage the robot to make progress towards the final state $s_f$. The $r$ costs encourage the robot to minimize the total control effort exerted and the $p$ costs encourage the robot to reach the goal by any means necessary.
 
 By changing their relative magnitudes, we can achieve a range of behavior and decision making. If $q$ and $p$ are kept low and $r$ is high, the robot has no real incentive to move at all as it can minimize its total cost by staying in place. Any movement would accrue a large cost due to the high $r$ term which would overpower any reduction in $q$ or $p$ costs due to moving closer to the final state.
 
-Making $q$ and $p$ moderately high while keeping a high value of $r$ can make the robot make progress towards the final state but stop when it has to make too much of a detour as that gets translated to applying higher control effort on average due to the longer path it needs to take. This can be seen here:
+Making $q$ and $p$ moderately high while keeping a high value of $r$ can make the robot make progress towards the final state but stop when it has to make too much of a detour as that gets translated to applying higher control effort on average due to the longer path it will need to take. This can be seen here:
 
 
 {{< figure src="/posts/5/gifs/mvmip_setup4.gif" alt="mvmip_setup4" >}}
@@ -393,6 +393,8 @@ For small problems (Like the first one shown here), it can be pretty quick.
 The single vehicle, single static obstacle case had 240 variables and 300 constraints and was able to be solved in around 10 ms.
 
 The last one -- multi vehicle, multi dynamic obstacle case had 8400 variables and 10500 constraints and took upwards of 30 min to solve. Obviously there are other factors such as how easy it is to actually find a solution given the constraints and so on, but in general the solve times explode as we have more vehicles and obstacles.
+
+Some of this can be mitigated by using the receding horizon approach.
 
 
 ## References
