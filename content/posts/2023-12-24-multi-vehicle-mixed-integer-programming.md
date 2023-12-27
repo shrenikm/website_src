@@ -53,9 +53,9 @@ $\newcommand{\pp}{p_{p}}$
 <!--
 Post
 -->
-In this post, we take a look at [this](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.
+In this post, we take a look at this [$[1]$](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.
 
-My implementation of the algorithm that was used to evaluate its performance and generate all the results in this post can be found [here](https://github.com/shrenikm/RePlan/tree/main/algorithms/multi_vehicle_mip)
+My implementation of the algorithm that was used to evaluate its performance and generate all the results in this post can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/multi_vehicle_mip)
 
 ## Problem
 
@@ -301,7 +301,7 @@ u_{pi} \le u_{p,max}\\\\
 \end{aligned}
 \end{equation}
 
-Please refer to the paper $[1]$, to see the entire LP written out in all its glory. The state and control constraints can also be formulated as approximate second order ball constraints using a collection of linear constraints (instead of box constraints) as seen in $[2]$.
+Please refer to the paper [$[1]$](#references), to see the entire LP written out in all its glory. The state and control constraints can also be formulated as approximate second order ball constraints using a collection of linear constraints (instead of box constraints) as seen in [$[2]$](#references).
 
 The papers model the obstacles as being rectangular, but we can always extend it to being general convex polygons. In this case, we would want the vehicle to lie outside the intersection of the half-spaces formed by the edges of the polygon.
 
@@ -318,7 +318,7 @@ Where $O_l$ represents the space inside the $\lth$ convex $P$ sided polygon.
 
 ## Implementation
 
-The MVMIP can be solved by setting up the objective and constraints and passing it to a linear solver that supports mixed integer programming. My [implementation](https://github.com/shrenikm/RePlan/tree/main/algorithms/multi_vehicle_mip) uses Google's OR-Tools
+The MVMIP can be solved by setting up the objective and constraints and passing it to a linear solver that supports mixed integer programming. My [implementation](https://github.com/shrenikm/Atium/tree/main/algorithms/multi_vehicle_mip) uses Google's OR-Tools
 
 The problem can be treated as a one-shot fixed arrival time problem where we set a large time step ($N$) and solve for each vehicle trajectory. This method ensures that there is only a fixed initial cost to run the algorithm and we don't make any adjustments later. The advantage of this method being that we are guaranteed to find the optimal solution to the initial problem setup.
 
