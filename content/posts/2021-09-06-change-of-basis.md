@@ -2,7 +2,7 @@
 title: "Change of basis"
 date: 2021-09-06T22:32:43-07:00
 draft: false
-tags: ["math", "linear_algebra"]
+tags: ["linear_algebra", "math"]
 ---
 
 We look into the problem of expressing a vector $p$, whose coordinates relative to some basis is known, through the coordinates relative to a different basis.

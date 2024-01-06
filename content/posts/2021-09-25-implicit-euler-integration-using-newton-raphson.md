@@ -2,7 +2,7 @@
 title: "Implicit Euler integration using Newton-Raphson"
 date: 2021-09-25T20:11:57-07:00
 draft: false
-tags: ["numerical_analysis"]
+tags: ["numerical_analysis", "simulation"]
 ---
 
 <!--
