@@ -35,12 +35,14 @@ $\newcommand{\fc}{\tilde{f}}$
 $\newcommand{\fcx}{\tilde{f}(\x)}$
 $\newcommand{\gx}{g(\x)}$
 $\newcommand{\gc}{\tilde{g}}$
+$\newcommand{\gcst}{{\tilde{g}^\ast}}$
 $\newcommand{\gcx}{\tilde{g}(\x)}$
 $\newcommand{\gxi}{g_i(\x)}$
 $\newcommand{\gci}{\tilde{g}_i}$
 $\newcommand{\gcxi}{\tilde{g}_i(\x)}$
 $\newcommand{\hx}{h(\x)}$
 $\newcommand{\hc}{\tilde{h}}$
+$\newcommand{\hcst}{{\tilde{h}^\ast}}$
 $\newcommand{\hcx}{\tilde{h}(\x)}$
 $\newcommand{\hxi}{h_i(\x)}$
 $\newcommand{\hci}{\tilde{h}_i}$
@@ -452,8 +454,8 @@ After convexifiying the functions, the QP can be written as:
 \lVert \xst - \x \rVert_2 \le s\\\\
 A_g\x \le b_g\\\\
 A_h\x = b_h\\\\
-\Wgst\x - \tg \le \Wgst\xst - g(\xst)\\\\
-\Whst\x - \sh + \th = \Whst\xst - h(\xst)\\\\
+\Wgst\x - \tg \le \Wgst\xst - \gcst\\\\
+\Whst\x - \sh + \th = \Whst\xst - \hcst\\\\
 \end{aligned}
 \end{equation}
 
@@ -506,6 +508,51 @@ q = \begin{bmatrix}
 \end{bmatrix}
 \end{aligned}
 \end{equation}
+
+
+\begin{equation}
+\begin{aligned}
+A = \begin{bmatrix}
+I^{n \times n} & 0^{n \times ns}\\\\
+I^{n \times n} & 0^{n \times ns}\\\\
+A_g & 0^{n_{A_g} \times ns}\\\\
+A_h & 0^{n_{A_h} \times ns}\\\\
+\Wgst & \begin{bmatrix}
+-I^{\nineq \times \nineq} & 0^{\nineq \times 2\neq}\\\\
+\end{bmatrix}\\\\
+\Whst & \begin{bmatrix}
+0^{\neq \times \nineq} & -I^{\neq \times \neq} & I^{\neq \times \neq}\\\\
+\end{bmatrix}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+l = \begin{bmatrix}
+lb\\\\
+\xst - s\\\\
+-\infty^{n_{A_g}}\\\\
+b_h\\\\
+-\infty^{\nineq}\\\\
+\Whst\xst - \hcst\\\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+u = \begin{bmatrix}
+ub\\\\
+\xst + s\\\\
+b_g\\\\
+b_h\\\\
+\Wgst\xst - \gcst\\\\
+\Whst\xst - \hcst\\\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
 
 ## Evaluation
 
