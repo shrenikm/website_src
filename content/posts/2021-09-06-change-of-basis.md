@@ -2,9 +2,9 @@
 title: "Change of basis"
 date: 2021-09-06T22:32:43-07:00
 draft: false
-tags: ["math", "linear_algebra"]
+tags: ["linear_algebra", "math"]
 ---
-
+<!-- Post 2 -->
 We look into the problem of expressing a vector $p$, whose coordinates relative to some basis is known, through the coordinates relative to a different basis.
 
 Let's assume that $p$ lies in an $n$ dimensional vector space $V$ defined over the field $F$. Let $A$ and $B$ be two different sets of basis vectors containing the vectors $\set{\alpha_1, \ldots, \alpha_n}$ and $\set{\beta_1, \ldots, \beta_n}$ respectively.

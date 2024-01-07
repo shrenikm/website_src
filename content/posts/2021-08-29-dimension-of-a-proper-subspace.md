@@ -2,9 +2,9 @@
 title: "Dimension of a proper subspace"
 date: 2021-08-29T10:20:38-07:00
 draft: false
-tags: ["math", "linear_algebra"]
+tags: ["linear_algebra", "math"]
 ---
-
+<!-- Post 1 -->
 Let $V$ be a finite dimensional vector space over the field $F$, with $\dim{V} = n$.  
 We also define the ordered basis for $V$ to be $B = \set{\beta_1, \ldots, \beta_n}$.
 

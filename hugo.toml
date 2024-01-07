@@ -48,7 +48,13 @@ disqusShortname = "https-shrenikm-com"
   disableMath = false
   useMathJax = true
   
+# New Hugo requires the name and email under params.author
+[[params.author]]
+  name = "Shrenik M"
+  email = "shrenik95@gmail.com"
 
+# The theme still uses the author field. Remove this will
+# remove the footer icon links.
 [author]
   name = "Shrenik M"
   email = "shrenik95@gmail.com"
