@@ -4,9 +4,11 @@ date: 2023-12-24T18:54:32-08:00
 draft: false
 tags: ["implementation", "motion_planning", "numerical_optimization", "robotics", "trajectory_optimization", "simulation"]
 ---
-<!--
-Latex commands
--->
+<!--- Post 5 -->
+In this post, we take a look at this [$[1]$](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.
+
+My implementation of the algorithm that was used to evaluate its performance and generate all the results in this post can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/multi_vehicle_mip)
+
 $\newcommand{\ith}{i^{th}}$
 $\newcommand{\pth}{p^{th}}$
 $\newcommand{\qth}{q^{th}}$
@@ -50,10 +52,6 @@ $\newcommand{\Bp}{B_{p}}$
 $\newcommand{\qp}{q_{p}}$
 $\newcommand{\rp}{r_{p}}$
 $\newcommand{\pp}{p_{p}}$
-<!-- Post 5 -->
-In this post, we take a look at this [$[1]$](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.
-
-My implementation of the algorithm that was used to evaluate its performance and generate all the results in this post can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/multi_vehicle_mip)
 
 ## Problem
 
