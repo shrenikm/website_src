@@ -4,7 +4,11 @@ date: 2024-01-06T11:11:12-08:00
 draft: false
 tags: ["control", "implementation", "motion_planning", "numerical_optimization", "robotics", "trajectory_optimization"]
 ---
-<!-- common commands -->
+<!--- Post 6 -->
+TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation of collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
+
+This post will go into the details of the optimization part, and give an outline of how it can be implemented. My implementation can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt)
+
 $\newcommand{\R}{\mathbb{R}}$
 $\newcommand{\Rn}{\mathbb{R}^n}$
 $\newcommand{\Rm}{\mathbb{R}^n}$
@@ -15,7 +19,6 @@ $\newcommand{\vline}{\Bigr|}$
 $\newcommand{\st}{\text{s.t.}}$
 $\newcommand{\x}{\mathrm{x}}$
 $\newcommand{\e}{\mathrm{e}}$
-<!-- Post specific -->
 $\newcommand{\nineq}{n_{ineq}}$
 $\newcommand{\neq}{n_{eq}}$
 $\newcommand{\Rnineqn}{\mathbb{R}^{\nineq \times n}}$
@@ -62,12 +65,6 @@ $\newcommand{\tg}{t_g}$
 $\newcommand{\sh}{s_h}$
 $\newcommand{\th}{t_h}$
 $\newcommand{\Dx}{\Delta \x}$
-
-<!-- Post 6 -->
-TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation of collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
-
-This post will go into the details of the optimization part, and give an outline of how it can be implemented. My implementation can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt)
-
 
 ## Theory
 
@@ -495,9 +492,9 @@ P = \Wfst + \mu \sum_i^{\nineq}\Tgist + \mu \sum_i^{\neq}\Thist
 \begin{aligned}
 q = \begin{bmatrix}
 \wfst - \half(\Wfst + \Wfst^T)\xst + \mu\left(- \half \xst^T \sum_i^{\nineq} (\Tgist + \Tgist^T) - \half \xst^T \sum_i^{\neq} (\Thist + \Thist^T)\right) \\\\
-1\\\\
+\mu\\\\
 \vdots\\\\
-1\\\\
+\mu\\\\
 \end{bmatrix}
 \end{aligned}
 \end{equation}
