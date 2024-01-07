@@ -4,18 +4,11 @@ date: 2021-09-25T20:11:57-07:00
 draft: false
 tags: ["numerical_analysis", "simulation"]
 ---
-
 <!--
 Latex commands
 -->
-
 $\newcommand{\Dt}{\Delta t}$
-
-
-<!--
-Post
--->
-
+<!-- Post 4 -->
 We take a look at the implicit or backward Euler integration scheme for computing numerical solutions of ordinary differential equations. We will go over the process of integrating using the backward Euler method and make comparisons to the more well known forward Euler method.
 
 Numerical integration is extremely important when it comes to simulating real world physical systems. For robotic systems, we usually have a continuous time state dynamics that tells us how the system behaves upon the application of a certain control signal.

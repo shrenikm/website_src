@@ -50,9 +50,7 @@ $\newcommand{\Bp}{B_{p}}$
 $\newcommand{\qp}{q_{p}}$
 $\newcommand{\rp}{r_{p}}$
 $\newcommand{\pp}{p_{p}}$
-<!--
-Post
--->
+<!-- Post 5 -->
 In this post, we take a look at this [$[1]$](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.
 
 My implementation of the algorithm that was used to evaluate its performance and generate all the results in this post can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/multi_vehicle_mip)

@@ -7,12 +7,29 @@ tags: ["control", "implementation", "motion_planning", "numerical_optimization",
 <!--
 Latex commands
 -->
+<!-- common commands -->
+$\newcommand{\R}{\mathbb{R}}$
+$\newcommand{\Rn}{\mathbb{R}^n}$
+$\newcommand{\Rm}{\mathbb{R}^n}$
+$\newcommand{\Rnn}{\mathbb{R}^{n \times n}}$
+$\newcommand{\Rmn}{\mathbb{R}^{m \times n}}$
+$\newcommand{\half}{\frac{1}{2}}$
+$\newcommand{\vline}{\Bigr|}$
 $\newcommand{\st}{\text{s.t.}}$
+$\newcommand{\x}{\mathrm{x}}$
+$\newcommand{\e}{\mathrm{e}}$
+<!-- Post specific -->
 $\newcommand{\nineq}{n_{ineq}}$
 $\newcommand{\neq}{n_{eq}}$
-$\newcommand{\x}{\mathrm{x}}$
-$\newcommand{\xst}{\mathrm{x}^\ast}$
-$\newcommand{\e}{\mathrm{e}}$
+$\newcommand{\Rnineqn}{\mathbb{R}^{\nineq \times n}}$
+$\newcommand{\Rneqn}{\mathbb{R}^{\neq \times n}}$
+$\newcommand{\Rnnnineq}{\mathbb{R}^{n \times n \times \nineq}}$
+$\newcommand{\Rnnneq}{\mathbb{R}^{n \times n \times \neq}}$
+$\newcommand{\xst}{{\mathrm{x}^\ast}}$
+$\newcommand{\Tgixst}{\Omega_{g, i}(\xst)}$
+$\newcommand{\Tgist}{{\Omega_{g, i}^\ast}}$
+$\newcommand{\Thixst}{{\Omega_{h, i}(\xst)}}$
+$\newcommand{\Thist}{\Omega_{h, i}^\ast}$
 $\newcommand{\fx}{f(\x)}$
 $\newcommand{\fc}{\tilde{f}}$
 $\newcommand{\fcx}{\tilde{f}(\x)}$
@@ -30,9 +47,25 @@ $\newcommand{\hci}{\tilde{h}_i}$
 $\newcommand{\hcxi}{\tilde{h}_i(\x)}$
 $\newcommand{\tp}{\tau^{+}}$
 $\newcommand{\tm}{\tau^{-}}$
+$\newcommand{\wfxst}{\omega_f(\xst)}$
+$\newcommand{\wfst}{\omega_f^\ast}$
+$\newcommand{\Wfxst}{W_f(\xst)}$
+$\newcommand{\Wfst}{{W_f^\ast}}$
+$\newcommand{\Wgxst}{W_g(\xst)}$
+$\newcommand{\Wgst}{{W_g^\ast}}$
+$\newcommand{\Whxst}{W_h(\xst)}$
+$\newcommand{\Whst}{{W_h^\ast}}$
+$\newcommand{\Tgxst}{\Omega_g(\xst)}$
+$\newcommand{\Tgst}{{\Omega_g^\ast}}$
+$\newcommand{\Thxst}{{\Omega_h(\xst)}}$
+$\newcommand{\Thst}{{\Omega_h^\ast}}$
+$\newcommand{\tg}{t_g}$
+$\newcommand{\sh}{s_h}$
+$\newcommand{\th}{t_h}$
 <!--
-Post
 -->
+$\newcommand{\Dx}{\Delta \x}$
+<!-- Post 6 -->
 TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation for collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
 
 This post will go into the details of the optimization part, and give an outline of how it can be implemented. My implementation can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt)
@@ -50,7 +83,7 @@ h_i(\x) = 0, \quad i = 1, 2, \ldots , \nineq\\\\
 \end{aligned}
 \end{equation}
 
-$f$, $g_i$ and $h_i$ are scalar non-convex functions with $\x$ being the vector of variables to optimize. For trajectory optimization algorithms, $\x$ consists of the sequence of control inputs and/or sequence of states (depending on the method used -- direct, indirect, etc.) that can then be optimized to find the optimal robot trajectory.
+$f$, $g_i$ and $h_i$ are scalar non-convex functions with $\x \in \Rn$ being the vector of variables to optimize. For trajectory optimization algorithms, $\x$ consists of the sequence of control inputs and/or sequence of states (depending on the method used -- direct, indirect, etc.) that can then be optimized to find the optimal robot trajectory.
 
 Unfortunately, such optimization problems are usually NP-hard and we're almost never guaranteed to find the global optima. Coupled with the fact that for motion planning, we usually require these problems to be solved quickly, most methods to solve such problems tend to gravitate towards using local optimization methods. One such popular method is Sequential Convex Programming (SCP).
 
@@ -233,14 +266,189 @@ $\qquad$ $\mu \leftarrow k \ast \mu$
 
 Now we get to the fun part of implementing it. In this section, we'll go over how all of this can be implemented, along with details that were skipped in the paper. For reference, my python version of the algorithm can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt).
 
-### Convexification
+### Convexifying The Cost
 
-How do we actually go about convexifying the problem? In the paper, each of the functions are expanded about the current $\x$ value using the Taylor Series. After doing this for each function, we can convert the non-convex optimization problem in to a Quadratic Program (QP) at each step.
+How do we actually go about convexifying the problem? In the paper, each of the functions are expanded about the current $\x$ value using the Taylor Series (Up until the second order). After doing this for each function, we can convert the non-convex optimization problem in to a Quadratic Program (QP) at each step.
 
-Expanding the cost function $\fx$ around $\xst$, we get
+More specifically, we can try to cast the problem into this specific form of the QP:
 
 \begin{equation}
+\begin{aligned}
+\min_x \half x^TPx + q^Tx\\\\
+\st \quad l \le Ax \le u\\\\
+\quad x \in \Rn\\\\
+\quad P \in \Rnn, q \in \Rn, A \in \Rmn\\\\
+\quad l \in \Rm, u \in \Rm\\\\
+\end{aligned}
 \end{equation}
+
+Why this form in particiular, because these are the inputs required to solve a QP problem using [OSQP](https://osqp.org/), an open source and widely used optimization library for solving convex quadratic programs.
+
+
+Expanding the cost function $\fx$ around $\xst$ up until the second order, we get
+
+
+\begin{equation}
+\begin{aligned}
+\fcx = f(\xst) + \frac{\partial f}{\partial \x}^T\vline_{\x=\xst}(\x - \xst) + \half (\x - \xst)^T \frac{\partial^2 f}{\partial \x^2}^T\vline_{\x = \xst}(\x - \xst)
+\end{aligned}
+\end{equation}
+
+To simplify things, we represent:
+* The gradient vector at $\xst$, $\frac{\partial f}{\partial \x}^T\vline_{\x=\xst}$ by $\wfxst \in \Rn$
+* The hessian matrix at $\xst$, $\frac{\partial^2 f}{\partial \x^2}^T\vline_{\x = \xst}$ by $\Wfxst \in \Rnn$
+* The difference $(\x - \xst)$ by $\Dx$
+
+
+The convexified approximation now looks like:
+
+\begin{equation}
+\begin{aligned}
+\fcx = f(\xst) + \wfxst^T\Dx + \half \Dx^T \Wfxst \Dx
+\end{aligned}
+\end{equation}
+
+To get it into the standard QP form, we need to expand $\Dx$ and separate out the first and second order terms of $\x$. After simplification, this gives us:
+
+\begin{equation}
+\begin{aligned}
+\fcx = \half \x^T \Wfxst \x + (\wfxst - \half(\Wfxst + \Wfxst^T)\xst) ^T \x
+\end{aligned}
+\end{equation}
+
+Note that we have dropped the terms that do not depend on $\x$ (Such as $f(\xst)$, $\xst^{T} \Wfxst \xst$ and $\wfxst^{T} \xst$)as they don't matter in the cost function.
+
+As we can see the coefficients of the first order $\x$ terms will be incorporated in the $q$ matrix and the second order terms in the $P$ matrix of the final QP formulation.
+
+### Convexifying The Constraints
+
+In a similar fashion, we can convexify the constraints. Like in the paper, we can think of it as individual scalar valued $\gxi$, $\hxi$ constraints, but I find it easier to work with vector
+valued constraints $\gx$ and $\hx$ where the outputs are a vector, each value corresponding to one constraint in $\x$.
+
+In this case, as both the inputs and outputs of the functions are vectors, the gradients of the functions are matrices and the hessions are tensors. We represent them evaluated at $\xst$ as
+$\Wgxst \in \Rnineqn$, $\Whxst \in \Rneqn$, $\Tgxst \in \Rnnnineq$ and $\Thxst \in \Rnnneq$ for the constraint function families $g$ and $h$. We can think of the tensors to be comprised of individual hessian matrices $\Tgixst \in \Rnn$ and $\Thixst \in \Rnn$.
+
+Similar to the cost function, we can convexify the constraint functions using the taylor series expansion.
+
+
+\begin{equation}
+\begin{aligned}
+\gcx = g(\xst) + \Wgxst\Dx + \half \Dx^T \sum_i^{\nineq}\Tgixst \Dx\\\\
+\hcx = h(\xst) + \Whxst\Dx + \half \Dx^T \sum_i^{\neq}\Thixst \Dx\\\\
+\end{aligned}
+\end{equation}
+
+
+### Incorporating The Constraints
+
+We go back to an important bit in the paper. We still need to reformulate the penalties in a way that can passed off to a solver. If the $\gxi$ constraints can be linearized, the penalty function $|\gxi|^+$ can be written as $|a \cdot x + b|^+$. The problem of minimizing
+\begin{equation}
+\begin{aligned}
+\min_x |a\cdot x + b|^+
+\end{aligned}
+\end{equation}
+
+Can equivalently be written as
+
+\begin{equation}
+\begin{aligned}
+\min_{x} \tg\\\\
+\st \quad \tg \ge 0\\\\
+a\cdot x + b \le \tg\\\\
+\end{aligned}
+\end{equation}
+
+In a similar vein, $\min_x |\hxi|$ can be written as $\min_x |a\cdot x + b|$. Upon the introduction of more slack varibles, we get:
+
+\begin{equation}
+\begin{aligned}
+\min_{x} \sh + \th\\\\
+\st \quad \sh \ge 0\\\\
+\st \quad \th \ge 0\\\\
+\sh - \th = a\cdot x + b\\\\
+\end{aligned}
+\end{equation}
+
+But $\gcx$ and $\hcx$ have both quadratic and linear $\x$ terms. What do we do in this case?
+
+Luckily the nature of the penalty functions makes it easy to separate them out.
+
+\begin{equation}
+\begin{aligned}
+|\gci|^+ = |g(\xst) + \Wgxst\Dx + \half \Dx^T \sum_i^{\nineq}\Tgixst \Dx|^+\\\\
+= \half \Dx^T \sum_i^{\nineq}\Tgixst \Dx + |g(\xst) + \Wgxst\Dx|^+\\\\
+\end{aligned}
+\end{equation}
+
+We can pull the quadratic term out as it will be $\ge 0$ if each $\Tgixst \succeq 0$. Positive semi-definitiveness of the hessians is a reasonable assumption to make, and even if they aren't, we can
+modify and deal with them numerically.
+
+Similarly for the equality constraints:
+
+\begin{equation}
+\begin{aligned}
+|\hci| = |h(\xst) + \Whxst\Dx + \half \Dx^T \sum_i^{\neq}\Thixst \Dx|\\\\
+= \half \Dx^T \sum_i^{\neq}\Thixst \Dx + |h(\xst) + \Whxst\Dx|\\\\
+\end{aligned}
+\end{equation}
+
+So now we have linear terms, which can be incorporated through the slack variables into the cost function, along with linear constraints in $\x$ and the slack varibles themselves.
+What do we do about the quadratic term? Dropping them is a bad idea as then there would be nothing in the cost function to numerically push $\x$ to a region that satisfies constraints.
+The only reason using the penalty factor $\mu$ works is that there is some term in the convexified constaint functions that push the entire cost around.
+
+We can simply add the quadratic terms directly into the cost and incorporate them into the $P$ matrix.
+
+Finally, we look at what the linear constraint terms look like.
+
+ 
+\begin{equation}
+\begin{aligned}
+g(\xst) + \Wgxst\Dx\\\\
+\end{aligned}
+\end{equation}
+
+This is linear in $\Dx$ but we need them to be linear in $\x$. Similar to what we did for $f$, we can expand and separate out the terms. We then write out linear inequality in a way required by the QP. We have:
+
+\begin{equation}
+\begin{aligned}
+g(\xst) + \Wgxst\Dx \le \tg\\\\
+\end{aligned}
+\end{equation}
+
+This is linear in $\Dx$ but we need them to be linear in $\x$. Similar to what we did for $f$, we can expand and separate out the terms. We then write out linear inequality in a way required by the QP. We have:
+
+\begin{equation}
+\begin{aligned}
+\Wgxst\x - \tg \le \Wgxst\xst - g(\xst)\\\\
+\end{aligned}
+\end{equation}
+
+For the non-convex equality constraints, we have:
+
+\begin{equation}
+\begin{aligned}
+\Whxst\x - \sh + \th = \Whxst\xst - h(\xst)\\\\
+\end{aligned}
+\end{equation}
+
+
+### Final QP
+
+After convexifiying the functions, the QP can be written as:
+
+\begin{equation}
+\begin{aligned}
+\min_{\x} \half \x^T \Wfst \x + (\wfst - \half(\Wfst + \Wfst^T)\xst) ^T \x + \mu(\half \Dx^T \sum_i^{\nineq}\Tgist \Dx) + \mu(\half \Dx^T \sum_i^{\neq}\Thist \Dx) + \mu(\tg + \sh + \th)\\\\
+\st \quad lb \le \x \le ub\\\\
+\lVert \xst - \x \rVert \le s\\\\
+A_g\x \le b_g\\\\
+A_h\x = b_h\\\\
+\Wgst\x - \tg \le \Wgst\xst - g(\xst)\\\\
+\Whst\x - \sh + \th = \Whst\xst - h(\xst)\\\\
+\end{aligned}
+\end{equation}
+
+We abuse the notation slightly, where $[ \ ]^\ast$ refers to a quantity measured at $\xst$.
 
 
 

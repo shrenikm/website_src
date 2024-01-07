@@ -4,7 +4,7 @@ date: 2021-09-20T01:02:55-07:00
 draft: false
 tags: ["linear_algebra", "math"]
 ---
-
+<!-- Post 3 -->
 In this post, we take a look at some characteristics of injective linear transformations. Let $T$ be a linear transformation from some vector space $V$ to another vector space $W$, both defined over a field $F$. $T$ being injective, means that no two vectors in $V$ can be mapped to the same vector in $W$. We have a one-to-one mapping between the vectors in $V$ and their images in $W$.
 
 
