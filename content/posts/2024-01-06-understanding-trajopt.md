@@ -266,7 +266,7 @@ $\qquad$ $\mu \leftarrow k \ast \mu$
 
 ## Implementation
 
-Now we get to the fun part of implementing it. In this section, we'll go over how all of this can be implemented, along with details that were skipped in the paper. For reference, my python version of the algorithm can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt).
+Now we get to the fun part of implementing it. In this section, we'll go over how all of this can be implemented, along with details that were skipped in the paper. For reference, my python implementation of the algorithm can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt).
 
 ### Convexifying The Cost
 
@@ -552,6 +552,44 @@ b_h\\\\
 \end{bmatrix}
 \end{aligned}
 \end{equation}
+
+
+### Libraries
+
+My implementation uses [OSQP](https://osqp.org/) to solve the QP at each SCP step. Most solvers and optimization libraries support quadratic programming, so this part is pretty straightforward.
+
+For simple problem setups, we can manually compute the function derivatives, but for more complex setups this might not be an option. High DOF systems with large number of constraints will require
+the computation of large hessian tensors which can be painstaking (and sometimes impossible) to compute analytically.
+
+I've found [JAX](https://jax.readthedocs.io/en/latest/index.html) to be a godsend in these scenarios. It can compute the derivatives of any of your functions to your required degree (provided the function is actually differentiable that many times) and also comes with other useful features to speed up computation using GPU/parallel processing and just in time compilation. Convexifying functions becomes a breeze as you can compute gradient and hessian functions extremely easily.
+
+```python
+import jax
+
+def f(x: np.ndarray, ...) -> float:
+    ...
+
+grad_f = jax.grad(f)
+hess_f = jax.hessian(f)
+
+x = ...
+grad_at_x = grad_f(x)
+hess_at_x = hess_f(x)
+```
+
+### The Not So Obvious Bits
+
+Here's a list of things that might not be obvious from a paper read through:
+
+1. Linear constraints might feel warm and fuzzy, but can break the problem if we're not careful. Consider the scenario where we're optimizing for a scalar $\x$ with a constraint $\x \ge 100$. Let's say that
+our initial guess of $\x$ is 0. Given the fact that our trust region is small initially, this would lead to an infeasible QP as the linear constraint is violated at the first iteration itself. There's no way for the optimzier to deal with this due to the small trust region. This means that:
+    - We need to be careful about how we go about choosing the initial $\x_0$ in general
+    - Starting the problem off with linear constraints violated could be a recipe for disaster
+
+    We could do some numerical magic like introduce penalties and let the cost function drive $\x$ into the feasible space when this happens but it just complicates things unnecessarily. It's best to leave the complicated bits to decades of optimization research that are manifested through current day solvers. Most problems in robots usually have linear constraints that can be navigated around easily (such as goal state constraints, etc.)
+
+2. This one is more obvious, but we need to make sure to **drop** the solution when the cost function improvement ratio does not pass our acceptance threshold. Using the new $\xst$ in this case can
+lead to the problem being unable to find a way forward, even after reducing the trust region size as it might be impossible to backtrack from that position.
 
 
 ## Evaluation
