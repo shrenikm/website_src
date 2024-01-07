@@ -29,7 +29,7 @@ $\newcommand{\xst}{{\mathrm{x}^\ast}}$
 $\newcommand{\Tgixst}{\Omega_{g, i}(\xst)}$
 $\newcommand{\Tgist}{{\Omega_{g, i}^\ast}}$
 $\newcommand{\Thixst}{{\Omega_{h, i}(\xst)}}$
-$\newcommand{\Thist}{\Omega_{h, i}^\ast}$
+$\newcommand{\Thist}{{\Omega_{h, i}^\ast}}$
 $\newcommand{\fx}{f(\x)}$
 $\newcommand{\fc}{\tilde{f}}$
 $\newcommand{\fcx}{\tilde{f}(\x)}$
@@ -383,12 +383,20 @@ Luckily the nature of the penalty functions makes it easy to separate them out.
 We can pull the quadratic term out as it will be $\ge 0$ if each $\Tgixst \succeq 0$. Positive semi-definitiveness of the hessians is a reasonable assumption to make, and even if they aren't, we can
 modify and deal with them numerically.
 
+We also expand the quadratic term to separate out the quadratic and linear terms in $\x$. We get something similar to the cost function expansion.
+
+\begin{equation}
+\begin{aligned}
+\half \x^T\sum_i^{\nineq}\Tgixst \x - \half \xst^T \sum_i^{\nineq} (\Tgixst + \Tgixst^T) \x + |g(\xst) + \Wgxst\Dx|^+
+\end{aligned}
+\end{equation}
+
 Similarly for the equality constraints:
 
 \begin{equation}
 \begin{aligned}
 |\hci| = |h(\xst) + \Whxst\Dx + \half \Dx^T \sum_i^{\neq}\Thixst \Dx|\\\\
-= \half \Dx^T \sum_i^{\neq}\Thixst \Dx + |h(\xst) + \Whxst\Dx|\\\\
+= \half \x^T\sum_i^{\neq}\Thixst \x - \half \xst^T \sum_i^{\neq} (\Thixst + \Thixst^T) \x + |h(\xst) + \Whxst\Dx|
 \end{aligned}
 \end{equation}
 
@@ -438,9 +446,10 @@ After convexifiying the functions, the QP can be written as:
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} \half \x^T \Wfst \x + (\wfst - \half(\Wfst + \Wfst^T)\xst) ^T \x + \mu(\half \Dx^T \sum_i^{\nineq}\Tgist \Dx) + \mu(\half \Dx^T \sum_i^{\neq}\Thist \Dx) + \mu(\tg + \sh + \th)\\\\
+\min_{\x} \half \x^T \Wfst \x + (\wfst - \half(\Wfst + \Wfst^T)\xst) ^T \x +\\\\
+\mu(\half \x^T\sum_i^{\nineq}\Tgist \x - \half \xst^T \sum_i^{\nineq} (\Tgist + \Tgist^T) \x) + \mu(\half \x^T\sum_i^{\neq}\Thist \x - \half \xst^T \sum_i^{\neq} (\Thist + \Thist^T) \x) + \mu(\tg + \sh + \th)\\\\
 \st \quad lb \le \x \le ub\\\\
-\lVert \xst - \x \rVert \le s\\\\
+\lVert \xst - \x \rVert_2 \le s\\\\
 A_g\x \le b_g\\\\
 A_h\x = b_h\\\\
 \Wgst\x - \tg \le \Wgst\xst - g(\xst)\\\\
@@ -448,9 +457,55 @@ A_h\x = b_h\\\\
 \end{aligned}
 \end{equation}
 
-We abuse the notation slightly, where $[ \ ]^\ast$ refers to a quantity measured at $\xst$.
+We abuse the notation slightly, where $[ \ ]^\ast$ refers to a quantity measured at $\xst$.\
+Note that in addition to the constraints mentioned previous, we also have $lb \le \x \le ub$ constraints on the state as well as pure linear inequality and equality constraints (defined by
+$(A_g, b_g)$ and $(A_h, b_h)$) for which we don't require any slack terms.
+
+One final thing to note is that the trust region constraints $\lVert \xst - \x \rVert_2 \le s$ is not linear which would make the problem a QCQP instead. There are a bunch of ways around this:
+1. Solve the problem as a QCQP using a compatible solver
+2. Expand the second order constraints in terms of its gradients and hessians like the non-convex constraints and incorporate it that way. We don't lose out on anything doing this because the
+norm constraint is convex in the first place
+3. Replace the $l^2$ norm constraints using box constraints of the form $\xst - s \le x \le \xst + s$. This is the easiest way around the problem and works pretty well in practice. This is what
+the paper employs for solving some of the higher DOF problems.
 
 
+We can write the optimization problem in the standard QP form:
+
+\begin{equation}
+\begin{aligned}
+\min_z \half z^TPz + q^Tz\\\\
+\st \quad l \le Az \le u\\\\
+\end{aligned}
+\end{equation}
+
+Where $z$ is a variable that holds the original variables and the slack terms.
+
+\begin{equation}
+\begin{aligned}
+z = \begin{bmatrix}
+\x^T, \tg^T, \sh^T, \th^T
+\end{bmatrix}^T
+\end{aligned}
+\end{equation}
+
+The other quantities are:
+
+\begin{equation}
+\begin{aligned}
+P = \half \x^T \Wfst \x + \mu \sum_i^{\nineq}\Tgist + \mu \sum_i^{\neq}\Thist
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+q = \begin{bmatrix}
+\wfst - \half(\Wfst + \Wfst^T)\xst + \mu\left(- \half \xst^T \sum_i^{\nineq} (\Tgist + \Tgist^T) - \half \xst^T \sum_i^{\neq} (\Thist + \Thist^T)\right) \\\\
+1\\\\
+\vdots\\\\
+1\\\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
 
 ## Evaluation
 
