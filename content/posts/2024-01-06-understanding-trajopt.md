@@ -189,9 +189,9 @@ The paper uses $|\gxi|^+$ Where
 \begin{equation}
 |\gxi|^+ = \max(\x, 0)
 \end{equation}
-Whenever the constraints are satisfied, $\gxi \le 0$ which means that $|\gxi|^+ = 0$. So if we multiply this term by a an extremeley large penalty factor and add it to the cost function, it would force this term to go to zero (and hence satisfy the constraints) when the problem is solved. The minimizer of the penalized problem would be equal to the minimizer of the original problem with constraints.
+Whenever the constraints are satisfied, $\gxi \le 0$ which means that $|\gxi|^+ = 0$. So if we multiply this term by an extremely large penalty factor and add it to the cost function, it would force this term to go to zero (and hence satisfy the constraints) when the problem is solved. The minimizer of the penalized problem would be equal to the minimizer of the original problem with constraints.
 
-Similary for the non-convex equality functions $\hxi = 0$, we have a similar penalty function:
+Similarly for the non-convex equality functions $\hxi = 0$, we have a similar penalty function:
 \begin{equation}
 |\hxi|
 \end{equation}
@@ -284,7 +284,7 @@ More specifically, we can try to cast the problem into this specific form of the
 \end{aligned}
 \end{equation}
 
-Why this form in particiular, because these are the inputs required to solve a QP problem using [OSQP](https://osqp.org/), an open source and widely used optimization library for solving convex quadratic programs.
+Why this form in particular, because these are the inputs required to solve a QP problem using [OSQP](https://osqp.org/), an open source and widely used optimization library for solving convex quadratic programs.
 
 
 Expanding the cost function $\fx$ around $\xst$ up until the second order, we get
@@ -298,7 +298,7 @@ Expanding the cost function $\fx$ around $\xst$ up until the second order, we ge
 
 To simplify things, we represent:
 * The gradient vector at $\xst$, $\frac{\partial f}{\partial \x}^T\vline_{\x=\xst}$ by $\wfxst \in \Rn$
-* The hessian matrix at $\xst$, $\frac{\partial^2 f}{\partial \x^2}^T\vline_{\x = \xst}$ by $\Wfxst \in \Rnn$
+* The Hessian matrix at $\xst$, $\frac{\partial^2 f}{\partial \x^2}^T\vline_{\x = \xst}$ by $\Wfxst \in \Rnn$
 * The difference $(\x - \xst)$ by $\Dx$
 
 
@@ -327,10 +327,10 @@ As we can see the coefficients of the first order $\x$ terms will be incorporate
 In a similar fashion, we can convexify the constraints. Like in the paper, we can think of it as individual scalar valued $\gxi$, $\hxi$ constraints, but I find it easier to work with vector
 valued constraints $\gx$ and $\hx$ where the outputs are a vector, each value corresponding to one constraint in $\x$.
 
-In this case, as both the inputs and outputs of the functions are vectors, the gradients of the functions are matrices and the hessions are tensors. We represent them evaluated at $\xst$ as
-$\Wgxst \in \Rnineqn$, $\Whxst \in \Rneqn$, $\Tgxst \in \Rnnnineq$ and $\Thxst \in \Rnnneq$ for the constraint function families $g$ and $h$. We can think of the tensors to be comprised of individual hessian matrices $\Tgixst \in \Rnn$ and $\Thixst \in \Rnn$.
+In this case, as both the inputs and outputs of the functions are vectors, the gradients of the functions are matrices and the Hessians are tensors. We represent them evaluated at $\xst$ as
+$\Wgxst \in \Rnineqn$, $\Whxst \in \Rneqn$, $\Tgxst \in \Rnnnineq$ and $\Thxst \in \Rnnneq$ for the constraint function families $g$ and $h$. We can think of the tensors to be comprised of individual Hessian matrices $\Tgixst \in \Rnn$ and $\Thixst \in \Rnn$.
 
-Similar to the cost function, we can convexify the constraint functions using the taylor series expansion.
+Similar to the cost function, we can convexify the constraint functions using the Taylor series expansion.
 
 
 \begin{equation}
@@ -360,7 +360,7 @@ a\cdot x + b \le \tg\\\\
 \end{aligned}
 \end{equation}
 
-In a similar vein, $\min_x |\hxi|$ can be written as $\min_x |a\cdot x + b|$. Upon the introduction of more slack varibles, we get:
+In a similar vein, $\min_x |\hxi|$ can be written as $\min_x |a\cdot x + b|$. Upon the introduction of more slack variables, we get:
 
 \begin{equation}
 \begin{aligned}
@@ -382,8 +382,7 @@ Luckily the nature of the penalty functions makes it easy to separate them out.
 \end{aligned}
 \end{equation}
 
-We can pull the quadratic term out as it will be $\ge 0$ if each $\Tgixst \succeq 0$. Positive semi-definitiveness of the hessians is a reasonable assumption to make, and even if they aren't, we can
-modify and deal with them numerically.
+We can pull the quadratic term out as it will be $\ge 0$ if each $\Tgixst \succeq 0$. Positive semi-definitiveness of the Hessians is a reasonable assumption to make, and even if they aren't, we can modify and deal with them numerically.
 
 We also expand the quadratic term to separate out the quadratic and linear terms in $\x$. We get something similar to the cost function expansion.
 
@@ -402,9 +401,9 @@ Similarly for the equality constraints:
 \end{aligned}
 \end{equation}
 
-So now we have linear terms, which can be incorporated through the slack variables into the cost function, along with linear constraints in $\x$ and the slack varibles themselves.
+So now we have linear terms, which can be incorporated through the slack variables into the cost function, along with linear constraints in $\x$ and the slack variables themselves.
 What do we do about the quadratic term? Dropping them is a bad idea as then there would be nothing in the cost function to numerically push $\x$ to a region that satisfies constraints.
-The only reason using the penalty factor $\mu$ works is that there is some term in the convexified constaint functions that push the entire cost around.
+The only reason using the penalty factor $\mu$ works is that there is some term in the convexified constraint functions that push the entire cost around.
 
 We can simply add the quadratic terms directly into the cost and incorporate them into the $P$ matrix.
 
@@ -465,7 +464,7 @@ $(A_g, b_g)$ and $(A_h, b_h)$) for which we don't require any slack terms.
 
 One final thing to note is that the trust region constraints $\lVert \xst - \x \rVert_2 \le s$ is not linear which would make the problem a QCQP instead. There are a bunch of ways around this:
 1. Solve the problem as a QCQP using a compatible solver
-2. Expand the second order constraints in terms of its gradients and hessians like the non-convex constraints and incorporate it that way. We don't lose out on anything doing this because the
+2. Expand the second order constraints in terms of its gradients and Hessians like the non-convex constraints and incorporate it that way. We don't lose out on anything doing this because the
 norm constraint is convex in the first place
 3. Replace the $l^2$ norm constraints using box constraints of the form $\xst - s \le x \le \xst + s$. This is the easiest way around the problem and works pretty well in practice. This is what
 the paper employs for solving some of the higher DOF problems.
@@ -559,7 +558,7 @@ b_h\\\\
 My implementation uses [OSQP](https://osqp.org/) to solve the QP at each SCP step. Most solvers and optimization libraries support quadratic programming, so this part is pretty straightforward.
 
 For simple problem setups, we can manually compute the function derivatives, but for more complex setups this might not be an option. High DOF systems with large number of constraints will require
-the computation of large hessian tensors which can be painstaking (and sometimes impossible) to compute analytically.
+the computation of large Hessian tensors which can be painstaking (and sometimes impossible) to compute analytically.
 
 I've found [JAX](https://jax.readthedocs.io/en/latest/index.html) to be a godsend in these scenarios. It can compute the derivatives of any of your functions to your required degree (provided the function is actually differentiable that many times) and also comes with other useful features to speed up computation using GPU/parallel processing and just in time compilation. Convexifying functions becomes a breeze as you can compute gradient and hessian functions extremely easily.
 
@@ -582,7 +581,7 @@ hess_at_x = hess_f(x)
 Here's a list of things that might not be obvious from a paper read through:
 
 1. Linear constraints might feel warm and fuzzy, but can break the problem if we're not careful. Consider the scenario where we're optimizing for a scalar $\x$ with a constraint $\x \ge 100$. Let's say that
-our initial guess of $\x$ is 0. Given the fact that our trust region is small initially, this would lead to an infeasible QP as the linear constraint is violated at the first iteration itself. There's no way for the optimzier to deal with this due to the small trust region. This means that:
+our initial guess of $\x$ is 0. Given the fact that our trust region is small initially, this would lead to an infeasible QP as the linear constraint is violated at the first iteration itself. There's no way for the optimizer to deal with this due to the small trust region. This means that:
     - We need to be careful about how we go about choosing the initial $\x_0$ in general
     - Starting the problem off with linear constraints violated could be a recipe for disaster
 
@@ -590,10 +589,60 @@ our initial guess of $\x$ is 0. Given the fact that our trust region is small in
 
 2. This one is more obvious, but we need to make sure to **drop** the solution when the cost function improvement ratio does not pass our acceptance threshold. Using the new $\xst$ in this case can
 lead to the problem being unable to find a way forward, even after reducing the trust region size as it might be impossible to backtrack from that position.
+3. If the value of the constraint satisfaction threshold $ctol$ is not high enough, solvers will find it difficult to numerically converge to constraint satisfying solutions. Keeping it reasonably high will help in progressing the SCP at the correct times and will also speed up the overall solve time.
+4. It might seem logical to keep a high penalty factor initially, but this can come at the cost of sub-optimal solutions. The factor can always scale up later on once the constraints don't get satisfied.
+5. I covered this earlier but to re-iterate, if we don't include the quadratic terms of the convexified constraint functions in the overall cost function, there is nothing in the cost that will help drive the solution from infeasible to feasible regions.
+6. We don't really need to make a distinction for pure linear constraints and add them in as direct constraints without the slack terms. We could treat them as non-convex functions and follow the
+same procedure. The problem is equivalent and has the same optimum no matter which way we go about doing it. Not treating them as a special case makes the actual implementation a bit easier, but adding them directly should still be preferred as it reduces the overall program size by not having the additional slack terms.
 
 
 ## Evaluation
 
+We can now evaluate the algorithm on some examples. For this post, we'll go over how it operates on the Rosenbrock function. It's application on some actual robotic systems will be covered in another post.
+
+The Rosenbrock function is a non-convex function that is a nice test bed to test the performance of non-convex optimization methods. It isn't difficult to solve for but helps us get a good understanding of what the algorithm is doing under the hood. It also helps with easier debugging when implementing such algorithms.
+
+\begin{equation}
+\begin{aligned}
+f(x, y) = (a - x)^2 + b(y - x^2)^2
+\end{aligned}
+\end{equation}
+
+We test on the 2-dimensional version as this lets us visualize the algorithm and see what's going on at each step. We use $(a=1, b=100)$, which makes the function have a global minimum at $(1, 1)$ with a value $f(x, y) = 0$
+
+First, we try to minimize the problem unconstrained. Below we have a visualization of $\x = (x, y)$ from the initial to the final value as optimized by the algorithm.
+The initial value in this case is $(-1, -2)$. We can see it converge to the global minima at $(1, 1)$ (upto a tolerance) and the path it took to get there.
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_1_cost_constraint.gif" alt="trajopt_rosenbrock_1_cost_constraint" >}}
+
+We can run the same thing for a different starting point. This time from $(5, 5)$
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_2_cost_constraint.gif" alt="trajopt_rosenbrock_2_cost_constraint" >}}
+
+Time to start adding constraints!\
+To start off, we add a pure linear constraints that specify $(x \le -2, y \ge 0)$. we can see how the point moves on the cost surface and the constraint feasibility region (shaded in pink).
+
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_3.gif" alt="trajopt_rosenbrock_3" >}}
+
+
+Now we test non-linear constraints.\
+The linear constraints have been updated to $(x \ge 2, y \ge -5)$\
+We also have another constraint $(x - 2)^2 + (y - 2)^2 \le 4$ which defines a circular region in the X-Y plane (shaded in teal).
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_4.gif" alt="trajopt_rosenbrock_4" >}}
+
+We can see how the point passes through and overshoots the circular region initially but the increased penalty factor drives the point back through the quadratic term of the constraint function.
+
+Now we add an equality constraint of the form $(x - 2)^2 + (y - 2)^2 = 1$ to the existing set of constraints. Note that this is a circle of half the radius of the inequality region and the constraint now requires the solution to lie exactly on this smaller circle and not just within the larger inequality region. So the final solution will need to lie well within the inequality constraint region and not just at the surface of it like the previous setup. The equality region is the dark blue colored ring as seen below:
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_5.gif" alt="trajopt_rosenbrock_5" >}}
+
+Again we can see the costs balancing out and the equality constraint pushing the point further into the circular region (Once $\mu$ gets large enough) until it satisfies the equality constraint.
+
+To top things off, we introduce another inequality constraint $(x - 4)^2 + (y - 1)^2 \le 6.25$ along with all the other constraints. The feasible inequality region is the intersection of both the circular inequality regions and forms a leaf shaped region. The minima now has to shift a bit to the left in order to satisfy all the constraints.
+
+{{< figure src="/posts/6/gifs/trajopt_rosenbrock_6.gif" alt="trajopt_rosenbrock_6" >}}
 
 ## References
 
