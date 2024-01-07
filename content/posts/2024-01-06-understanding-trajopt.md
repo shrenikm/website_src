@@ -1,12 +1,9 @@
 ---
 title: "Understanding TrajOpt"
 date: 2024-01-06T11:11:12-08:00
-draft: true
+draft: false
 tags: ["control", "implementation", "motion_planning", "numerical_optimization", "robotics", "trajectory_optimization"]
 ---
-<!--
-Latex commands
--->
 <!-- common commands -->
 $\newcommand{\R}{\mathbb{R}}$
 $\newcommand{\Rn}{\mathbb{R}^n}$
@@ -64,11 +61,10 @@ $\newcommand{\Thst}{{\Omega_h^\ast}}$
 $\newcommand{\tg}{t_g}$
 $\newcommand{\sh}{s_h}$
 $\newcommand{\th}{t_h}$
-<!--
--->
 $\newcommand{\Dx}{\Delta \x}$
+
 <!-- Post 6 -->
-TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation for collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
+TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation of collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
 
 This post will go into the details of the optimization part, and give an outline of how it can be implemented. My implementation can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt)
 
@@ -79,7 +75,7 @@ Motion planning problems can usually be fully represented as a non-linear, non-c
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} f(\x)\\\\
+\min f(\x)\\\\
 \st \quad g_i(\x) \le 0, \ \ i = 1, 2, \ldots , \nineq\\\\
 h_i(\x) = 0, \quad i = 1, 2, \ldots , \nineq\\\\
 \end{aligned}
@@ -96,7 +92,7 @@ The main idea here is to convexify the non-convex problem at the current iterate
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} \fcx \\\\
+\min \fcx \\\\
 \st \quad \gcxi \le 0, \ \ i = 1, 2, \ldots , \nineq\\\\
 \hcxi = 0, \ \ i = 1, 2, \ldots , \nineq\\\\
 \end{aligned}
@@ -108,11 +104,11 @@ Here, $\fc$, $\gci$ and $\hci$ are the convexified functions at the current valu
 $\quad$ $\fc$, $\gc$, $\hc$ = ConvexifyProblem($f$, $g$, $h$) around $\x^\ast$\
 $\quad$ $\x^\ast \leftarrow \text{argmin}_{\x} \fcx \ \st \  \gcx \le 0, \ \hcx = 0$
 
-Fairly straightforward, but there is still something missing. When we convexify the problem, we make a local approximation of the (potentially highly) non-convex function. We rely on the fact that this local approximation is accurate enough and can help drive us to a minima upon repeating the procedure. But irrespective of what approximation method we use, as we move away from the current $\x$ around which the functions are convexified, it will start deviating from true values of the function.
+Fairly straightforward, but there is still something missing. When we convexify the problem, we make a local approximation of the (potentially highly) non-convex function. We rely on the fact that this local approximation is accurate enough and can help drive us to a minima upon repeating the procedure. But irrespective of what approximation method we use, as we move away from the current $\xst$ around which the functions are convexified, it will start deviating from true values of the function.
 
-What this means is that when we find the $\x$ that minimizes a particular convexified problem, the actual value of $\x$ that minimizes the problem could be far away from the current value of $\x$. This can lead to the algorithm getting to an updated value of $\x$ that is optimal according to the current convexified problem, but is not optimal according to the true non-convex problem.
+What this means is that when we find the $\xst$ that minimizes a particular convexified problem, the actual value of $\x$ that minimizes the problem could be far away from $\xst$. This can lead to the algorithm getting to an updated value of $\x$ that is optimal according to the current convexified problem, but is not optimal according to the true non-convex problem.
 
-To avoid this, SCP methods usually employ an additional trust region constraint, where we restrict the optimal value of $\x$ for a convexified step to be within a certain distance to the current value of $\x$. The distance metric is some sort of norm (usually the $l^2$-norm) in most cases. If we define the trust region size as $s$, we now get:
+To avoid this, SCP methods usually employ an additional trust region constraint, where we restrict the optimal value of $\x$ for a convexified step to be within a certain distance of $\xst$. The distance metric is some sort of norm (usually the $l^2$-norm) in most cases. If we define the trust region size as $s$, we now get:
 
 > **for** iteration = 1, 2, $\ldots$ **do**\
 $\quad$ $\fc$, $\gc$, $\hc$ = ConvexifyProblem($f$, $g$, $h$) around $\x^\ast$\
@@ -126,7 +122,7 @@ One strategy is to keep the trust region size small and fixed. This would guaran
 
 Consider a convexified step, where the convexified functions are almost an exact representation of the actual non-convex functions. In such a scenario, we could potentially take a large step while minimizing $\x$. Let's say that in this situation a trust region size of $s = 1$ can get us to a new value of $\x$ that also minimizes the original non-convex problem. Compared to us using a smaller $s$ (Like around $1\e{-2}$, $1\e{-3}$), we could get to a similar $\x$ with much fewer iterations.
 
-Dynamically varying the trust region size helps us get the best of both worlds. We can start of using a small trust region size and can progressively increase the size depending on how confident we are with the current convexified approximation. If we think that the convexified approximation is an accurate representation of the original problem around a larger region of $\x$, we can increase the trust region size and vice versa.
+Dynamically varying the trust region size helps us get the best of both worlds. We can start with using a small trust region size and can progressively increase the size depending on how confident we are with the current convexified approximation. If we think that the convexified approximation is an accurate representation of the original problem around a larger region of $\x$, we can increase the trust region size and vice versa.
 
 How do we know if the current problem approximation is a good one? We can use the new optimized value of $\x$ from the convexified problem and check how much it improves the original cost function as compared to the convexified cost function.
 
@@ -148,7 +144,7 @@ Let's consider two extreme cases:
 
 We define some $c \le 1$ (Referred to as step acceptance parameter in the paper) and make an assumption that if the ratio is $> c$, the approximation is good and we can increase the trust region size. If not, we decrease the trust region size and don't use the new $\xst$.
 
-This now brings us to the something similar to trust region loop as defined in the paper (more details on this later):
+This now brings us to something similar to the trust region loop defined in the paper (more details on this later):
 
 > TrustRegionLoop\
 **for** TrustRegionIteration = 1, 2, $\ldots$ **do**\
@@ -170,7 +166,7 @@ If the trust region becomes too small, the problem will be numerically be statio
 
 The SCP also requires some criteria to stop the trust region loop. Usually this is defined as some threshold between the successive solutions of $\x$. Usually when we're at a local/global minima, the gradients are zero and differences between successive solutions are minimal.
 
-Depending on the function, we could also end up in a situation where a region around the minima corresponds to the same or similar cost values. So it's generally a good idea to also have a convergence criteria on the value of the cost function as these would also stop moving when we're at a minima.
+Depending on the function, we could also end up in a situation where a region around the minima corresponds to the same or similar cost values. So it's generally a good idea to also have a convergence criteria on the value of the cost function as usually these would also stop moving much when we're at a minima.
 
 > IsConverged\
 $\quad$ **return** $\lVert \xst - \x \rVert_2 < xtol$ **or** $\lVert f(\xst) - f(\x) \rVert_2 < ftol$
@@ -202,7 +198,7 @@ The cost function of the convexified problem which initially was
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} \fcx \\\\
+\min \fcx \\\\
 \st \quad \gcxi \le 0, \ \ i = 1, 2, \ldots , \nineq\\\\
 \hcxi = 0, \ \ i = 1, 2, \ldots , \nineq\\\\
 \end{aligned}
@@ -212,12 +208,12 @@ Now has a more numerically tractable form:
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} \fcx + \mu \sum_i^{\nineq} |\gcxi|^+ + \mu\sum_i^{\neq}|\hcxi|\\\\
+\min \fcx + \mu \sum_i^{\nineq} |\gcxi|^+ + \mu\sum_i^{\neq}|\hcxi|\\\\
 \st \quad \lVert \x - \xst \rVert_2 \le s\\\\
 \end{aligned}
 \end{equation}
 
-Given the current trust region size $s$ and the penalty factor $\mu$. Larger the value of $\mu$, the more likely it is for the optimization to prioritize satisfying the constraints over minimizing the pure cost $\fx$. When $\mu$ is very large (theoretically close to $\infty$), solving the problem would attempt to satisfy the constraints and drive this down at any cost.
+Given the current trust region size $s$ and the penalty factor $\mu$. Larger the value of $\mu$, the more likely it is for the optimization to prioritize satisfying the constraints over minimizing the pure cost $\fx$. When $\mu$ is very large (theoretically close to $\infty$), solving the problem would attempt to satisfy the constraints at any cost.
 
 In order to check if the given constraints are satisfied, we have another procedure using a constraint satisfaction threshold $ctol$ (Where $0 < ctol \ll 1$). The threshold helps us relax the satisfaction requirements a bit when we actually implement it numerically. The check in practice becomes $\gxi \le ctol$ and $\lVert \hxi \rVert_2 \le ctol$
 
@@ -226,7 +222,7 @@ $\quad$ ***for*** $i=1, 2, \ldots, \nineq$\
 $\qquad$ **if** $\gxi > ctol$ **then**\
 $\qquad$ $\quad$ **return** False\
 $\quad$ ***for*** $i=1, 2, \ldots, \neq$\
-$\qquad$ **if** $\lVert \hxi \rVert_2 > ctol$ **then**\
+$\qquad$ **if** $|\hxi| > ctol$ **then**\
 $\qquad$ $\quad$ **return** False\
 $\quad$ **return** True
 
@@ -266,17 +262,17 @@ $\qquad$ $\mu \leftarrow k \ast \mu$
 
 ## Implementation
 
-Now we get to the fun part of implementing it. In this section, we'll go over how all of this can be implemented, along with details that were skipped in the paper. For reference, my python implementation of the algorithm can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt).
+Now we get to the fun part of implementing it. In this section, we'll go over how all of this can be implemented, along with some details that were skipped in the paper. For reference, my python implementation of the algorithm can be found [here](https://github.com/shrenikm/Atium/tree/main/algorithms/trajopt).
 
 ### Convexifying The Cost
 
-How do we actually go about convexifying the problem? In the paper, each of the functions are expanded about the current $\x$ value using the Taylor Series (Up until the second order). After doing this for each function, we can convert the non-convex optimization problem in to a Quadratic Program (QP) at each step.
+How do we actually go about convexifying the problem? In the paper, each of the functions are expanded about the current value of $\x$ using the Taylor series (Up until the second order). After doing this for each function, we can convert the non-convex optimization problem in to a Quadratic Program (QP) at each step.
 
 More specifically, we can try to cast the problem into this specific form of the QP:
 
 \begin{equation}
 \begin{aligned}
-\min_x \half x^TPx + q^Tx\\\\
+\min \half x^TPx + q^Tx\\\\
 \st \quad l \le Ax \le u\\\\
 \quad x \in \Rn\\\\
 \quad P \in \Rnn, q \in \Rn, A \in \Rmn\\\\
@@ -284,7 +280,7 @@ More specifically, we can try to cast the problem into this specific form of the
 \end{aligned}
 \end{equation}
 
-Why this form in particular, because these are the inputs required to solve a QP problem using [OSQP](https://osqp.org/), an open source and widely used optimization library for solving convex quadratic programs.
+Why this form in particular? Because this is a pretty standard form and also is the form of the inputs to [OSQP](https://osqp.org/), an open source and widely used optimization library for solving convex quadratic programs.
 
 
 Expanding the cost function $\fx$ around $\xst$ up until the second order, we get
@@ -318,7 +314,7 @@ To get it into the standard QP form, we need to expand $\Dx$ and separate out th
 \end{aligned}
 \end{equation}
 
-Note that we have dropped the terms that do not depend on $\x$ (Such as $f(\xst)$, $\xst^{T} \Wfxst \xst$ and $\wfxst^{T} \xst$)as they don't matter in the cost function.
+Note that we have dropped the terms that do not depend on $\x$ (Such as $f(\xst)$, $\xst^{T} \Wfxst \xst$ and $\wfxst^{T} \xst$) as they are constant with respect to the optimization variable.
 
 As we can see the coefficients of the first order $\x$ terms will be incorporated in the $q$ matrix and the second order terms in the $P$ matrix of the final QP formulation.
 
@@ -346,7 +342,7 @@ Similar to the cost function, we can convexify the constraint functions using th
 We go back to an important bit in the paper. We still need to reformulate the penalties in a way that can passed off to a solver. If the $\gxi$ constraints can be linearized, the penalty function $|\gxi|^+$ can be written as $|a \cdot x + b|^+$. The problem of minimizing
 \begin{equation}
 \begin{aligned}
-\min_x |a\cdot x + b|^+
+\min |a\cdot x + b|^+
 \end{aligned}
 \end{equation}
 
@@ -354,17 +350,17 @@ Can equivalently be written as
 
 \begin{equation}
 \begin{aligned}
-\min_{x} \tg\\\\
+\min \tg\\\\
 \st \quad \tg \ge 0\\\\
 a\cdot x + b \le \tg\\\\
 \end{aligned}
 \end{equation}
 
-In a similar vein, $\min_x |\hxi|$ can be written as $\min_x |a\cdot x + b|$. Upon the introduction of more slack variables, we get:
+In a similar vein, $\min |\hxi|$ can be written as $\min |a\cdot x + b|$. Upon the introduction of more slack variables, we get:
 
 \begin{equation}
 \begin{aligned}
-\min_{x} \sh + \th\\\\
+\min \sh + \th\\\\
 \st \quad \sh \ge 0\\\\
 \st \quad \th \ge 0\\\\
 \sh - \th = a\cdot x + b\\\\
@@ -402,7 +398,7 @@ Similarly for the equality constraints:
 \end{equation}
 
 So now we have linear terms, which can be incorporated through the slack variables into the cost function, along with linear constraints in $\x$ and the slack variables themselves.
-What do we do about the quadratic term? Dropping them is a bad idea as then there would be nothing in the cost function to numerically push $\x$ to a region that satisfies constraints.
+What do we do about the quadratic term? Dropping them is a bad idea as then there would be nothing in the cost function to numerically push $\x$ to a region that satisfies constraints (The slack terms are there but they don't perform this function).
 The only reason using the penalty factor $\mu$ works is that there is some term in the convexified constraint functions that push the entire cost around.
 
 We can simply add the quadratic terms directly into the cost and incorporate them into the $P$ matrix.
@@ -423,8 +419,6 @@ This is linear in $\Dx$ but we need them to be linear in $\x$. Similar to what w
 g(\xst) + \Wgxst\Dx \le \tg\\\\
 \end{aligned}
 \end{equation}
-
-This is linear in $\Dx$ but we need them to be linear in $\x$. Similar to what we did for $f$, we can expand and separate out the terms. We then write out linear inequality in a way required by the QP. We have:
 
 \begin{equation}
 \begin{aligned}
@@ -447,7 +441,7 @@ After convexifiying the functions, the QP can be written as:
 
 \begin{equation}
 \begin{aligned}
-\min_{\x} \half \x^T \Wfst \x + (\wfst - \half(\Wfst + \Wfst^T)\xst) ^T \x +\\\\
+\min \half \x^T \Wfst \x + (\wfst - \half(\Wfst + \Wfst^T)\xst) ^T \x +\\\\
 \mu(\half \x^T\sum_i^{\nineq}\Tgist \x - \half \xst^T \sum_i^{\nineq} (\Tgist + \Tgist^T) \x) + \mu(\half \x^T\sum_i^{\neq}\Thist \x - \half \xst^T \sum_i^{\neq} (\Thist + \Thist^T) \x) + \mu(\tg + \sh + \th)\\\\
 \st \quad lb \le \x \le ub\\\\
 \lVert \xst - \x \rVert_2 \le s\\\\
@@ -459,7 +453,7 @@ A_h\x = b_h\\\\
 \end{equation}
 
 We abuse the notation slightly, where $[ \ ]^\ast$ refers to a quantity measured at $\xst$.\
-Note that in addition to the constraints mentioned previous, we also have $lb \le \x \le ub$ constraints on the state as well as pure linear inequality and equality constraints (defined by
+Note that in addition to the constraints mentioned previously, we also have $lb \le \x \le ub$ constraints on the state as well as pure linear inequality and equality constraints (defined by
 $(A_g, b_g)$ and $(A_h, b_h)$) for which we don't require any slack terms.
 
 One final thing to note is that the trust region constraints $\lVert \xst - \x \rVert_2 \le s$ is not linear which would make the problem a QCQP instead. There are a bunch of ways around this:
@@ -474,7 +468,7 @@ We can write the optimization problem in the standard QP form:
 
 \begin{equation}
 \begin{aligned}
-\min_z \half z^TPz + q^Tz\\\\
+\min \half z^TPz + q^Tz\\\\
 \st \quad l \le Az \le u\\\\
 \end{aligned}
 \end{equation}
@@ -493,7 +487,7 @@ The other quantities are:
 
 \begin{equation}
 \begin{aligned}
-P = \half \x^T \Wfst \x + \mu \sum_i^{\nineq}\Tgist + \mu \sum_i^{\neq}\Thist
+P = \Wfst + \mu \sum_i^{\nineq}\Tgist + \mu \sum_i^{\neq}\Thist
 \end{aligned}
 \end{equation}
 
@@ -582,10 +576,10 @@ Here's a list of things that might not be obvious from a paper read through:
 
 1. Linear constraints might feel warm and fuzzy, but can break the problem if we're not careful. Consider the scenario where we're optimizing for a scalar $\x$ with a constraint $\x \ge 100$. Let's say that
 our initial guess of $\x$ is 0. Given the fact that our trust region is small initially, this would lead to an infeasible QP as the linear constraint is violated at the first iteration itself. There's no way for the optimizer to deal with this due to the small trust region. This means that:
-    - We need to be careful about how we go about choosing the initial $\x_0$ in general
+    - We need to be careful about how we go about choosing the initial $\x$ in general
     - Starting the problem off with linear constraints violated could be a recipe for disaster
 
-    We could do some numerical magic like introduce penalties and let the cost function drive $\x$ into the feasible space when this happens but it just complicates things unnecessarily. It's best to leave the complicated bits to decades of optimization research that are manifested through current day solvers. Most problems in robots usually have linear constraints that can be navigated around easily (such as goal state constraints, etc.)
+    We could do some numerical magic like introduce penalties and let the cost function drive $\x$ into the feasible space when this happens but it just complicates things unnecessarily. It's best to leave the complicated bits to decades of optimization research that we have access through current day solvers. Most problems in robotics usually have linear constraints that can be navigated around easily (such as goal state constraints, etc.)
 
 2. This one is more obvious, but we need to make sure to **drop** the solution when the cost function improvement ratio does not pass our acceptance threshold. Using the new $\xst$ in this case can
 lead to the problem being unable to find a way forward, even after reducing the trust region size as it might be impossible to backtrack from that position.
@@ -598,7 +592,7 @@ same procedure. The problem is equivalent and has the same optimum no matter whi
 
 ## Evaluation
 
-We can now evaluate the algorithm on some examples. For this post, we'll go over how it operates on the Rosenbrock function. It's application on some actual robotic systems will be covered in another post.
+We can now evaluate the algorithm on some examples. For this post, we'll go over how it operates on the Rosenbrock function. Its application on some actual robotic systems will be covered in another post.
 
 The Rosenbrock function is a non-convex function that is a nice test bed to test the performance of non-convex optimization methods. It isn't difficult to solve for but helps us get a good understanding of what the algorithm is doing under the hood. It also helps with easier debugging when implementing such algorithms.
 
@@ -634,7 +628,7 @@ We also have another constraint $(x - 2)^2 + (y - 2)^2 \le 4$ which defines a ci
 
 We can see how the point passes through and overshoots the circular region initially but the increased penalty factor drives the point back through the quadratic term of the constraint function.
 
-Now we add an equality constraint of the form $(x - 2)^2 + (y - 2)^2 = 1$ to the existing set of constraints. Note that this is a circle of half the radius of the inequality region and the constraint now requires the solution to lie exactly on this smaller circle and not just within the larger inequality region. So the final solution will need to lie well within the inequality constraint region and not just at the surface of it like the previous setup. The equality region is the dark blue colored ring as seen below:
+Now we add an equality constraint of the form $(x - 2)^2 + (y - 2)^2 = 1$ to the existing set of constraints. Note that this is a circle of half the radius of the inequality region and the constraint now requires the solution to lie exactly on this smaller circle and not just within the larger inequality region. So the final solution will need to lie well within the inequality constraint region and not just at the surface like the previous setup. The equality region is the dark blue colored ring as seen below:
 
 {{< figure src="/posts/6/gifs/trajopt_rosenbrock_5.gif" alt="trajopt_rosenbrock_5" >}}
 
