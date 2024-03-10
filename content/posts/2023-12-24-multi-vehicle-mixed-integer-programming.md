@@ -2,7 +2,7 @@
 title: "Multi Vehicle Mixed Integer Programming"
 date: 2023-12-24T18:54:32-08:00
 draft: false
-tags: ["implementation", "motion_planning", "numerical_optimization", "robotics", "trajectory_optimization", "simulation"]
+tags: ["robotics", "implementation", "numerical_optimization", "motion_planning", "trajectory_optimization", "simulation"]
 ---
 <!--- Post 5 -->
 In this post, we take a look at this [$[1]$](#references) paper, which introduces a simple, yet interesting approach to solving a multi-vehicle path planning problem.

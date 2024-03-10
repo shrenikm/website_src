@@ -2,7 +2,7 @@
 title: "Understanding TrajOpt"
 date: 2024-01-06T11:11:12-08:00
 draft: false
-tags: ["control", "implementation", "motion_planning", "numerical_optimization", "robotics", "trajectory_optimization"]
+tags: ["robotics", "control", "implementation", "numerical_optimization", "motion_planning", "trajectory_optimization", "jax"]
 ---
 <!-- Post 6 -->
 TrajOpt [$[1]$](#references) is an optimization based approach for motion planning. More specifically, it uses a sequential convex optimization procedure along with a formulation of collision constraints to find locally optimal planning trajectories, even for robotic systems that have a large number of degrees of freedom.
