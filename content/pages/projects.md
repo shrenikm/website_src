@@ -7,7 +7,7 @@ layout: "about"
 
 ## Atium
 
-Atium is a collection of some of my motion planning experiments, research ideas and paper implementations. Details of the individual implementations can be found within the subdirectories of the repo.
+Atium is a more formal collection of some of my motion planning experiments, research ideas and paper implementations. Details of the individual implementations can be found within the subdirectories of the repo.
 
 {{< figure src="/pages/gifs/mvmip_setup8.gif" alt="mvmip_setup8" >}}
 
@@ -91,6 +91,18 @@ At first, the VAE gives more varying outputs due to not being completely trained
 [Repository](https://github.com/shrenikm/GPV)
 
 ---
+
+## Morphac
+#### [_Shelved_]
+
+<br>
+
+Morphac (Mobile Robot Playground for Planning and Control) started out as a motion planning and control library for mobile robots. The aim was to develop a mature software library that could be bootstrapped to carry out research in areas such as planning, trajectory optimization, etc. Its backend is written completely in C++ with python bindings for actual use.
+
+[Repository](https://github.com/shrenikm/Morphac)
+
+---
+
 
 ## Mnyrve 
 #### [_Shelved_]
