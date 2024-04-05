@@ -5,21 +5,52 @@ draft: false
 layout: "about"
 ---
 
+## Atium
+
+Atium is a more formal collection of some of my motion planning experiments, research ideas and paper implementations. Details of the individual implementations can be found within the subdirectories of the repo.
+
+{{< figure src="/pages/gifs/mvmip_setup8.gif" alt="mvmip_setup8" >}}
+
+[Repository](https://github.com/shrenikm/Atium)
+
+
+## Manipulation Research
+
+This is a collection of manipulation algorithms for execution in simulation and a real hardware robot.
+
+</br>
+{{< figure src="/pages/gifs/lite6_simple_pick_place_combined.gif" alt="lite6_simple_pick_place_combined" >}}
+</br>
+
+[Repository](https://github.com/shrenikm/manipulation_research)
+
+
+## Legged Research
+
+This is a collection of algorithms for legged robots. Everything here is purely simulation in Drake.
+
+</br>
+{{< figure src="/pages/gifs/viz_zmp_ortho.gif" alt="viz_zmp_ortho" >}}
+</br>
+
+[Repository](https://github.com/shrenikm/legged_research)
+
+
 ## GPV
 
 ### Generation of policy variations in deep reinforcement learning    
 
-<br><br/>
+</br>
 
 The project aims to enable reinforcement learning agents to obtain probabilistically consistant policy variations from a learned deterministic policy. A Variational Autoencoder (VAE) is used to obtain these variations. The goal is to enable agents to execute actions that are different (and sub-optimal) from the trained policy, while still being able to achieve the desired result.
 
 This is useful in cases where we need to generate behavior that is not a part of the trained policy, while also making sure that the system does not fail at the given task. It also gives the agent an opportunity to solve the task in environments that are slightly different from which the episodes were obtained.
 
-<br><br/>
+</br>
 
 #### Post-Training GPV (PT-GPV)
 
-<br><br/>
+</br>
 
 The post training variant of the algorithm assumes that we have an agent that has already been trained using some learning algorithm. The agent thus knows what action to take in any given state. Given such a model, a VAE is trained conditioned on the current state to reconstruct the output policy.
 
@@ -27,46 +58,33 @@ A VAE is used because we can control the variation in the output. By weighing th
 
 The VAE is trained using state-action pairs collected from the trained agent. The algorithm was tested on OpenAI's gym environments. The results on the bipedal environment are shown below. On the left is a vanilla DDPG (Deep Deterministic Policy Gradients) policy, and on the right is the agent running the policy from PT-GPV.
 
-<!--
-<p>
-<img src="https://media.giphy.com/media/ddx0IwLxYIQfyAb2MW/giphy.gif" alt="DDPG policy" width="420" />
-<img src="https://media.giphy.com/media/1poXsOUWW97FnHu5S4/giphy.gif" alt="PT-GPV policy" width="420" />
-</p>
--->
-
-<br><br/>
+<br>
 
  | 
 ------------------ | ---------------------
 {{< figure src="/pages/gifs/gpv1.gif" width="820" alt="DDPG policy">}} | {{< figure src="/pages/gifs/gpv1.gif" width="420" alt="PT-GPV policy" >}}
 
-<br><br/>
+<br>
 
 As seen, the algorithm is able to generate behaviour not seen in the original trained model (Like jumping).
 
 By varying the weights of the VAE losses, we can control the amount of variation in the resulting actions. As the amount of variation is increased, the probability of the agent failing to complete the task also increases.
 
-<br><br/>
+<br>
 
 #### Simultaneous-Training GPV (ST-GPV)
 
-<br><br/>
+<br>
 
 In this variant, the VAE is used in conjunction with a learning algorithm to help in better exploration. Finding the best exploration methods is a challenging task in policy gradient algorithms. DDPG uses predicted actions along with normal/Ornstein-Uhlenbeck noise to enable exploration. We replace this noise generation procedure with a VAE that gets trained along with the learning algorithm.
 
 Each training iteration trains DDPG and the VAE for a set number of iterations. The training follows the structure shown below.
 
-<br><br/>
-
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1-Bs_-8rNH2HZZsmKYlOG-Rq1Aq-K_j2Y" alt="ST-GPV block diagram" width="520" />
-</p>
--->
+<br>
 
 {{< figure src="/pages/images/gpv.png" width="520" alt="ST-GPV block diagram" >}}
 
-<br><br/>
+<br>
 
 At first, the VAE gives more varying outputs due to not being completely trained. This leads to more exploration. As the DDPG target actor converges, the VAE output also stabilizes. The exploration decreases as the model is trained, which is the behaviour expected of a good exploration strategy. GPV can thus be used along with a learning algorithm to facilitate exploration.
 
@@ -74,10 +92,22 @@ At first, the VAE gives more varying outputs due to not being completely trained
 
 ---
 
-## Mnyrve 
-#### [_Ongoing_]
+## Morphac
+#### [_Shelved_]
 
-<br><br/>
+<br>
+
+Morphac (Mobile Robot Playground for Planning and Control) started out as a motion planning and control library for mobile robots. The aim was to develop a mature software library that could be bootstrapped to carry out research in areas such as planning, trajectory optimization, etc. Its backend is written completely in C++ with python bindings for actual use.
+
+[Repository](https://github.com/shrenikm/Morphac)
+
+---
+
+
+## Mnyrve 
+#### [_Shelved_]
+
+<br>
 
 Mnyrve is a Reinforcement Learning library written in C++. The aim of the project is to provide implementations of useful learning algorithms as well as provide a platform to implement the more recent ones.
 
@@ -87,17 +117,11 @@ The core library is built using C++. The [Eigen](https://eigen.tuxfamily.org/dox
 
 An example of the output of the value iteration algorithm on a simple gridworld is shown below.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1gJgkCGQSKTDWGx_6OzC7Rg1Dn-nhVFQO" alt="Grid world" width="500"/> 
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/mnyrve.png" width="500" alt="Grid World" >}}
 
-<br><br/>
+<br>
 
 [Repository](https://github.com/shrenikm/Mnyrve)
 
@@ -107,7 +131,7 @@ An example of the output of the value iteration algorithm on a simple gridworld 
 
 ### Parametric Trajectory Estimation
 
-<br><br/>
+<br>
 
 PTE explores methods to use data from previous trajectory optimization solutions to enable obtaining faster optimization for further problems (On the same system). Two approaches have been explored:
 
@@ -116,21 +140,21 @@ PTE explores methods to use data from previous trajectory optimization solutions
 
 For fitting curves, the idea is to compute a general curve that only depends on the starting configuration. The assumption made is that the control problem solves the same task and has the same goal state. Given all the previous trajectory data with their initial states, we fit a least error curve parameterized by the initial state of the system.
 
-<br><br/>
+<br>
 
 #### Single Polynomial Spline (SPS)
 
-<br><br/>
+<br>
 
 In this model, a single high degree polynomial spline is fit to the trajectory data. The fit obtained was of high error due to the inherent coupling between state transitions. Being a single spline, the knot points in a neighbourhood would all be dependent on each other and cannot be moved independently.
 
 If the degree of the polynomial is too low, it would not be able to express the trajectory well enough. On the other hand, if it is too high, we end up with a lot of variation and lose generality. This model thus performs poorly, especially when the state space dimensions are high.
 
-<br><br/>
+<br>
 
 #### Point-wise Spine (PWS)
 
-<br><br/>
+<br>
 
 To deal with the issues faced by SPS, a point wise spline model is introduced. The spline models each knot point separately (parameterized by the initial state), which helps in removing unnecessary dependencies between the knot points. As each knot point parameter is now independent, failure to capture trends in a particular region in the trajectory will not affect other regions.
 
@@ -138,22 +162,12 @@ As expected, this model works better than SPS and gives us impressive results. T
 
 Data for the results were obtained using direct collocation on simulations of the cartpole, acrobot and quadrotor models. The following figures show the curves found after optimization for the cartpole and quadrotor states.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1NsxQabaEd4o93aBgHIl4c6zonVNvCKeN" alt="Grid world" width="720"/> 
-</p>
-
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1V6cX52Cz0OIbMErLZLb7W21nmmWUGUfn" alt="Grid world" width="960"/> 
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/pte1.jpg" width="720" alt="Cartpole" >}}
 {{< figure src="/pages/images/pte2.jpg" width="960" alt="Quadrotor" >}}
 
-<br><br/>
+<br>
 
 The least error trajectories are very accurate for lower dimensional systems (cartpole) but tend to start deviating away for higher dimensional systems (quadrotor). But even for the higher dimensional systems, the states corresponding to the positions are well tracked and give reasonably good estimates.
 
@@ -181,11 +195,11 @@ Quadrotor Evaluation | Iterations without PWS | Iterations with PWS | Function e
 
 PWS is able to reduce the number number of operations required to solve the optimization problem, even for higher dimensional systems.
 
-<br><br/>
+<br>
 
 #### Naive Trajectory Connectivity Graphs (NTCG)
 
-<br><br/>
+<br>
 
 A novel graphical model approach was developed to be able to reuse parts of older trajectories. The idea is to build a graph with all of the previous trajectory data. The nodes of the graph correspond to the states, while the edges correspond to the control inputs required to get from one state to another. These are obtained from the direct collocation solutions.
 
@@ -195,17 +209,11 @@ Given a new control task with the initial and final states, the algorithm comput
 
 A representation of the graph is as shown. The dotted nodes denote the new initial and end states. The dotted lines denote the new transitions that must be computed using optimization. The three node path in the middle may be reused.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1y2tyjGwzrIGO5KBlW5U8oeAa0ktiCLCi" alt="Grid world" width="480"/> 
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/pte3.png" width="480" alt="NTCG" >}}
 
-<br><br/>
+<br>
 
 * NTCG is not restricted by the type of control problem, unlike the parametric methods. All data for any control task given to the system may be used.
 * As the data accumulated for a system increases, obtaining future solutions becomes easier as the distance to the closest node decreases.
@@ -213,17 +221,11 @@ A representation of the graph is as shown. The dotted nodes denote the new initi
 
 The result of NTCG on a quadrotor model is shown below. A random set of initial positions and velocities are given. The goal is to reach the same position with zero velocity. The solution is slightly sub-optimal as expected, but still satisfies all the torque constraints.
 
-<!--
-<p align="center">
-<img src="https://media.giphy.com/media/1xlZekMePiXdsiOq0x/giphy.gif" alt="DDPG policy" width="520" />
-</p>
--->
+<br>
 
-<br><br/>
+{{< figure src="/pages/gifs/pte.gif" width="520" alt="NTCG Quadrotor" >}}
 
-{{< figure src="/gifs/pte.gif" width="520" alt="NTCG Quadrotor" >}}
-
-<br><br/>
+<br>
 
 [Repository](https://github.com/shrenikm/PTE)
 
@@ -233,17 +235,17 @@ The result of NTCG on a quadrotor model is shown below. A random set of initial 
 
 ### Non-Cooperative Locally Dynamic Trees
 
-<br><br/>
+<br>
 
 NCLDT is a novel probabilistic path planning algorithm that uses multiple dynamic trees to find obstacle-free paths in high dimensional and highly constrained spaces. It aims to be more efficient in finding solutions through narrow passages in state-space.
 
 Unlike RRT's, NCLDT grows (and decays) multiple trees. Each iteration samples and grows each active tree, while also looking at connection possiblities between the trees and the goal.
 
-<br><br/>
+<br>
 
 #### Single tree model
 
-<br><br/>
+<br>
 
 The randomness in NCLDT arises from the sampling of tree roots. The root of the tree is the only node that gets sampled in an unbiased manner. Once the root is sampled, the tree does not grow in all directions. Instead it can dynamically grow between two set directions. The first direction is towards the goal state. The second direction is perpendicular to the vector to the goal state, away from the initial state. The idea is that once a root has been sampled, the tree would have some idea on how to grow towards the goal. The two directio model enables the tree to actively grow around obstacles in its path, rather than rely on probabilistic guesses like RRT.
 
@@ -253,35 +255,23 @@ While growing trees, a bunch of samples are made about some angular region in th
 
 The dynamic growth of a single tree using the dual direction model is as shown. The results have been evaluated on a two dimensional environment. The red regions denote obstacles.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1_0ih30vUUF_iuHwX1XFr1xx1KdJCytq7" alt="tree 2" width="600" />
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/ncldt1.png" width="600" alt="Single Tree" >}}
 
-<br><br/>
+<br>
 
 If a favorable root is sampled, a single tree is able to find its way through any narrow passage. This behavior is shown below.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1MkYqPlFPn6wn5kL_uTcYMlMSgajv4uLG" alt="narrow passage" width="600" />
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/ncldt2.png" width="600" alt="Narrow Passage" >}}
 
-<br><br/>
+<br>
 
 #### Multi tree model
 
-<br><br/>
+<br>
 
 The goal of the algorithm is to have lots of these dynamic trees growing in the state space, enabling connections between trees. The inuition is that lots of root node samples would result in at least a few of the nodes being favorable. These roots would then grow trees around obstacles and through narrow passages. After these sub-paths are found, other trees would keep connecting with them till a path to the goal configuration is found.
 
@@ -295,18 +285,11 @@ The multi tree model introduces a few more complexities.
 
 The result of the multi tree algorithm in a two dimensional setting is as shown.
 
-<!--
-<p align="center">
-<img src="https://drive.google.com/uc?export=view&id=1Y-0p43AsftZNJ2LAZrKLp0qrWtfcRKCg" alt="multi tree" width="600" />
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< figure src="/pages/images/ncldt3.png" width="600" alt="Multi Tree" >}}
 
-<br><br/>
-
+<br>
 
 [Repository](https://github.com/shrenikm/NCLDT)
 
@@ -316,7 +299,9 @@ The result of the multi tree algorithm in a two dimensional setting is as shown.
 
 ### Autonomous Robot Development Open-Source Platform
 
-<br><br/>
+<br>
+
+This one is one of my earliest robotics projects and what got me into the field!
 
 ARDOP is a humanoid robot that was built to serve as an open-source platform for robotics. It was designed to be an economical way to learn and test algorithms for planning, control, perception and learning.
 
@@ -324,20 +309,11 @@ STL files for the parts are open-source and may be 3D printed. The robot consist
 
 All the code is written in C++. Tests and simulations were run using MATLAB/Python, before being deployed on the hardware. The robot is able to identify objects and perform simple manipulation tasks as shown.
 
-
-<!--
-<p align="center">
-<a href="https://www.youtube.com/watch?v=ako6UgEj9yY&t">
-<img src="https://img.youtube.com/vi/ako6UgEj9yY/0.jpg" alt="ARDOP" width="640" />
-</a>
-</p>
--->
-
-<br><br/>
+<br>
 
 {{< youtube ako6UgEj9yY >}}
 
-<br><br/>
+<br>
 
 [Repository](https://github.com/ardop)
 
