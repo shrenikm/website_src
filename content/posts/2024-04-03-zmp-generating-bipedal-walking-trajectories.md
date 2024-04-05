@@ -73,7 +73,7 @@ Now the question is how do we use this?
 A simple way of generating walking gaits using this principle is to do the following:
 
 1. First assume foot positions on the ground. We assume that we have a stance phase where we hold contact on both feet while also changing the COM, and a swing phase, where one foot swings forward to the next position. The stance and swing phases alternate between feet to form a walking gait
-2. As we require the ZMP to be within the convex feet polygon hull, we can make assumptions about the trajectory of the ZMP given the positions of the feet over time
+2. As we require the ZMP to be within the convex hull of the feet contact polygon, we can make assumptions about the trajectory of the ZMP given the positions of the feet over time
 3. Given the ZMP trajectory, we can then use the COM dynamics equations to compute the trajectory of the COM
 4. And finally, we can kinematically solve for joint angles, that can track this COM trajectory
 
@@ -83,20 +83,19 @@ We can use sophisticated methods to solve for dynamically feasible foot position
 
 ### ZMP Trajectory Generation
 
-We can just set the ZMP at any time to be the center of the convex polygon hull made by the feet currently in contact. This means that at the end of the stance phase, as we're lifting the swing leg, the ZMP must now be within the hull of the single stance feet making contact.
-
+We can just set the ZMP at any time to be the center of the convex polygon hull made by the feet currently in contact. This means that at the end of the stance phase, as we're lifting the swing leg, the ZMP must now be within the convex hull of the single stance feet making contact.
 
 ### COM Trajectory Generation
 
 Solving for the COM can be trickier that it looks from the ZMP equations. We need to compute a COM trajectory such that the derivatives of the trajectory at every point satisfy the required relationship.
 
-There are more recent methods that solves this problem using a closed form solution [$[1]$](#references). To comply with our objective and constraints, I used one of the earliest methods for solving this, using preview control. For details, see [$[2]$](#references) and [$[3]$](#references).
+There are more recent methods that solves this problem using a closed form solution [$[1]$](#references). To comply with our initial objective and constraints, I used one of the earliest methods developed for solving this problem: COM generation using preview control. For details, see [$[2]$](#references) and [$[3]$](#references).
 
 The end result is this:
 
 {{< figure src="/posts/8/images/zmp_traj1.png" alt="zmp_traj1" >}}
 
-Here we can see the required path to track in green, along with positions of the feet (brown rectangles -- light brown represents the left foot and dark brown represents the right). The blue trajectory represents the ZMP trajectory and we can see how it is always within the convex hull of the feet that are in contact. As we switch from swing to stance, we can see how the ZMP switches to be over the stance feet to maintain balance. The orange trajectory is the COM trajectory computed using the preview controller. The dotted line over the ZMP trajectory is the ZMP trajectory computed using the COM trajectory solution. A good solution of the ZMP equations will result in this re-computed ZMP trajectory being almost coincident with the original ZMP trajectory, which we can see.
+Here we can see the required path to track in green, along with positions of the feet (brown rectangles -- light brown represents the left foot and dark brown represents the right). The blue trajectory represents the ZMP trajectory and we can see how it is always within the convex hull of the feet that are in contact. As we switch from swing to stance, we can see how the ZMP switches to be over the stance feet to maintain balance. The orange trajectory is the COM trajectory computed using the preview controller. The dotted line over the ZMP trajectory is the ZMP trajectory computed using the COM trajectory solution. A good solution of the ZMP equations will result in this re-computed ZMP trajectory being almost coincident with the original ZMP trajectory, which we can see is the case here.
 
 We can also plot the trajectories of each individual foot, in $x$, $y$ and $z$, along with the $x$ and $y$ components of the COM trajectory.  
  
@@ -112,7 +111,7 @@ To wrap things up, we need to convert this COM trajectory into a trajectory of j
 
 We can use this to our advantage by formulating the problem as a non-linear optimization problem. Because of the high dexterity of the model, we can be reasonably confident that the optimizer will find good solutions even with a lot of constraints on the kinematics. We make the following considerations:
 
-1. We split the trajectory into alternating stance and swing phases for each leg. This keeps each optimization problem independent and simple. It has the disadvantage of being open loop and resulting in some inconsistencies but we won't get into that here
+1. We split the trajectory into alternating stance and swing phases for each leg. This keeps each optimization problem independent and simple. It has the disadvantage of being open loop and resulting in some inconsistencies, but we won't get into that here
 2. We don't solve for any of the upper body or arm joints and fix them to be zero (or whatever the initial configuration is)
 3. The COM is purely a kinematic function of the joint angles. Even though it is non-linear, it makes it easy to represent the COM constraint in the optimization problem.
 
@@ -122,7 +121,7 @@ For each phase from time $t_s$ to $t_e$, we divide the trajectory into a number 
 2. The COM (Given by the forward kinematics $\fcom(q_k)$) must be at $\gcom(t_k)$
 3. $\qkj$ for the joint indices $j$ corresponding to the upper body (Set $U$) must be 0
 
-In order to generate smooth trajectories, we add a quadratic cost between the joint angles of successive sample points. This will help prevent the solver from finding solutions that switch rapidly, especially when multiple IK solutions are available for a given sample point.
+In order to generate smooth trajectories, we add a cost between the joint angles of successive sample points. This will help prevent the solver from finding solutions that switch rapidly, especially when multiple IK solutions are available for a given sample point.
 
 The optimization problem looks something like:
 
@@ -146,7 +145,7 @@ Solving this, will give us a series of joint angles $q_k$ corresponding to a sin
 
 ## Final Remarks
 
-Note that actually executing/tracking this trajectory requires more work. Open loop control here will almost never work, and the system will need to have a feedback controller running at a pretty high frequency that helps track the COM. Some methods also combine the COM tracking and stabilization into a single controller and can allow for greater deviation and recovery.
+Note that actually executing/tracking this trajectory requires more work. Open loop control here will almost never work, and the system will need to have a feedback controller running at a pretty high frequency that helps track the COM and stabilize the robot. Some methods also combine the COM generation and stabilization into a single controller and can allow for greater deviation and recovery.
 
 On a real robot, it is also common to have sensor modules to help compute estimated instantaneous positions of the ZMP, either by using pressure sensors on the feet or joint torque sensors.
 
